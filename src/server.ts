@@ -893,14 +893,124 @@ app.post('/especializado_en/borrar/:id_especialidad/:matricula', async (req, res
     }
 });
 
+//GUARDIA
+app.get('/guardia', async (_req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT g.id_guardia, g.tipo_guardia
+            FROM guardia g
+            ORDER BY g.id_guardia
+        `);
+
+        const filas = result.rows.map((f: any) => `
+            <tr>
+                <td>${f.id_guardia}</td>
+                <td>${f.tipo_guardia}</td>
+                <td>
+                    <form method="POST" action="/guardia/borrar/${f.id_guardia}" style="display:inline">
+                        <button type="submit" onclick="return confirm('¿Borrar guardia id:${f.id_guardia}  tipo:${f.tipo_guardia} ?')">Borrar</button>
+                    </form>
+                </td>
+            </tr>
+        `).join('');
+
+        res.send(`
+            <h1>Gestión de Guardias</h1>
+            <a href="/guardia/nueva">➕ Nueva Guardia</a> | <a href="/">Inicio</a><br><br>
+            <table border="1" cellpadding="5">
+                <tr>
+                    <th>ID Guardia</th>
+                    <th>Tipo Guardia</th>
+                </tr>
+                ${filas || '<tr><td colspan="2">No hay registros.</td></tr>'}
+            </table>
+        `);
+    } catch (err: any) {
+        res.status(500).send(`<pre>${err.message}</pre>`);
+    }
+});
+
+//NUEVA GUARDIA
+app.get('/guardia/nueva', async (_req, res) => {
+    try {
+        res.send(`
+    <h1>Nueva Guardia</h1>
+    <form method="POST" action="/guardia/nueva">
+        Tipo Guardia:
+        <select name="tipo_guardia" required>
+            <option value="MATUTINO">MATUTINO</option>
+            <option value="VESPERTINO">VESPERTINO</option>
+            <option value="NOCTURNO">NOCTURNO</option>
+        </select> <br><br>
+        
+        <button type="submit">Guardar Guardia</button>
+    </form>
+    <br><a href="/guardia">Volver</a>
+`);
+    } catch (err: any) {
+        res.status(500).send(`<pre>${err.message}</pre>`);
+    }
+});
+
+//AGREGAR NUEVA GUARDIA
+app.post('/guardia/nueva', async (req, res) => {
+    const {tipo_guardia} = req.body;
+
+    try {
+        await pool.query(
+            `INSERT INTO guardia (tipo_guardia)
+             VALUES ($1)`,
+            [tipo_guardia]
+        );
+        res.redirect('/guardia');
+    } catch (err: any) {
+        res.status(400).send(`
+            <h1>Error al guardar</h1>
+            <pre>${err.message}</pre>
+            <a href="/guardia/nueva">Volver</a>
+        `);
+    }
+});
+
+//BORRAR ESPECIALIZADO_EN
+app.post('/guardia/borrar/:id_guardia', async (req, res) => {
+    const id_guardia = Number(req.params.id_guardia);
+
+    const client = await pool.connect();
+
+    try {
+        await client.query('BEGIN');
+
+        await client.query(
+            'DELETE FROM asignacion_guardia WHERE id_guardia=$1',
+            [id_guardia]
+        );
+
+        await client.query(
+            'DELETE FROM guardia WHERE id_guardia=$1 ',
+            [id_guardia]
+        );
+
+        await client.query('COMMIT');
+        res.redirect('/guardia');
+
+    } catch (err: any) {
+        await client.query('ROLLBACK');
+        res.status(400).send(`<h1>Error</h1><pre>${err.message}</pre><a href="/guardia">Volver</a>`);
+    } finally {
+        client.release();
+    }
+});
+
 /*
     HECHO (del faltan):
    - cama: clave compuesta (num_cama,num_habitacion) → forms con select de habitación + número de cama.
    - especialidad
    - especializado_en
+   - guardia
 
 	FALTAN:
-   - guardia / asignacion_guardia
+   - asignacion_guardia
    - periodo_vacaciones / tiene
    - internacion
    - ronda / incluye
