@@ -1,25 +1,23 @@
 {
-  "name": "hospital_bd",
+  "name": "tp_hospital",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/server.js",
-    "dev": "ts-node src/server.ts"
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ffacun2/tp_hospital.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "express": "^5.1.0",
-    "pg": "^8.16.3"
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ffacun2/tp_hospital/issues"
   },
-  "devDependencies": {
-    "@types/express": "^5.0.5",
-    "@types/node": "^24.10.1",
-    "@types/pg": "^8.15.6",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
-  }
+  "homepage": "https://github.com/ffacun2/tp_hospital#readme"
 }
