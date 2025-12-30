@@ -35,13 +35,13 @@ export interface Guardia {
     f_ingreso: string
     f_alta: string | null
     nro_habitacion: number
-    nro_historial_clinico: number
+    dni: number
     observaciones: string
     paciente_nombre?: string
   }
   
   export interface Paciente {
-    nro_historial_clinico: number
+    dni: number
     nombre: string
     apellido: string
   }
@@ -60,11 +60,11 @@ export interface Guardia {
   }
 
   export interface Paciente {
-    nro_historial_clinico: number
     nombre: string
     apellido: string
     dni: number
-    f_nac: string
+    sexo: string
+    fecha_nac: string
     domicilio: string
     telefono: string
   }

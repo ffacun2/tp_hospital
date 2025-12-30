@@ -2,7 +2,7 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000"
 
 async function fetchAPI(endpoint: string, options?: RequestInit) {
   const URL = `${API_URL}${endpoint}`
-  console.log(URL)
+  
   const response = await fetch(URL, {
     ...options,
     headers: {
@@ -71,4 +71,8 @@ export const guardiasAPI = {
   create: (data: any) => fetchAPI("/guardias", { method: "POST", body: JSON.stringify(data) }),
   update: (id: number, data: any) => fetchAPI(`/guardias/${id}`, { method: "PUT", body: JSON.stringify(data) }),
   delete: (id: number) => fetchAPI(`/guardias/${id}`, { method: "DELETE" }),
+}
+
+export const enumsAPI = {
+  getTipoSexo: () => fetchAPI("/config/enums/sexo")
 }

@@ -84,17 +84,20 @@ pool.connect((err, client, release) => {
   // PUT update patient
   app.put("/pacientes/:dni", async (req: Request, res: Response) => {
     const dni = Number(req.params.dni)
-    const { nombre, apellido, fecha_nac, sexo } = req.body
+    const { nombre, apellido, f_nac, sexo } = req.body
+    console.log(typeof dni)
+    console.log(req.body)
     try {
       await pool.query("UPDATE paciente SET nombre=$1, apellido=$2, fecha_nac=$3, sexo=$4 WHERE dni=$5", [
         nombre,
         apellido,
-        fecha_nac,
+        f_nac,
         sexo,
         dni,
       ])
       res.json({ message: "Paciente actualizado exitosamente" })
     } catch (err: any) {
+      console.log(err)
       res.status(400).json({ error: err.message })
     }
   })
@@ -571,3 +574,26 @@ pool.connect((err, client, release) => {
     console.log(`📡 API disponible en http://localhost:${PORT}`)
   })
   
+  // Enum tipo_sexo
+app.get('/config/enums/:typename', async (req, res) => {
+  const { typename } = req.params;
+  try {
+      const result = await pool.query(`
+          SELECT enumlabel 
+          FROM pg_enum 
+          JOIN pg_type ON pg_enum.enumtypid = pg_type.oid 
+          WHERE pg_type.typname = $1
+          ORDER BY enumsortorder`,
+          [typename.toLowerCase()] 
+      );
+
+      if (result.rowCount === 0) {
+          return res.status(404).json({ message: "Tipo de dato no encontrado" });
+      }
+
+      const labels = result.rows.map(r => r.enumlabel);
+      res.json(labels);
+  } catch (err: any) {
+      res.status(500).json({ error: err.message });
+  }
+});
