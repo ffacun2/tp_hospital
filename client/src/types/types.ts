@@ -52,10 +52,11 @@ export interface Guardia {
 
   export interface Medico {
     matricula: number
+    dni: number
+    cuil_cuit: number
     nombre: string
     apellido: string
     especialidad: string
-    domicilio: string
     telefono: string
   }
 

@@ -36,9 +36,11 @@ export default function ListPaciente() {
           const data = await pacientesAPI.getAll()
           setPacientes(data)
           setFilteredPacientes(data)
-        } catch (error: any) {
+        } 
+        catch (error: any) {
           alert("Error al cargar pacientes: " + error.message)
-        } finally {
+        } 
+        finally {
           setLoading(false)
         }
       }
@@ -48,7 +50,8 @@ export default function ListPaciente() {
           try {
             await pacientesAPI.delete(id)
             loadPacientes()
-          } catch (error: any) {
+          } 
+          catch (error: any) {
             alert("Error al eliminar: " + error.message)
           }
         }

@@ -8,7 +8,6 @@ loadEnvFile('./.env');
 
 const app = express();
 
-console.log(process.env.PORT)
 const PORT = process.env.PORT;
 
 // Middleware
@@ -85,8 +84,6 @@ pool.connect((err, client, release) => {
   app.put("/pacientes/:dni", async (req: Request, res: Response) => {
     const dni = Number(req.params.dni)
     const { nombre, apellido, f_nac, sexo } = req.body
-    console.log(typeof dni)
-    console.log(req.body)
     try {
       await pool.query("UPDATE paciente SET nombre=$1, apellido=$2, fecha_nac=$3, sexo=$4 WHERE dni=$5", [
         nombre,
@@ -97,7 +94,6 @@ pool.connect((err, client, release) => {
       ])
       res.json({ message: "Paciente actualizado exitosamente" })
     } catch (err: any) {
-      console.log(err)
       res.status(400).json({ error: err.message })
     }
   })
@@ -150,7 +146,7 @@ pool.connect((err, client, release) => {
     try {
       await pool.query(
         "INSERT INTO medico(matricula, dni, nombre, apellido, cuil_cuit, fecha_ingreso) VALUES ($1, $2, $3, $4, $5, $6)",
-        [Number(matricula), Number(dni), nombre, apellido, cuil_cuit, fecha_ingreso],
+        [Number(matricula), Number(dni), nombre, apellido, cuil_cuit, new Date()],
       )
       res.status(201).json({ message: "Médico creado exitosamente" })
     } catch (err: any) {
@@ -164,8 +160,8 @@ pool.connect((err, client, release) => {
     const { dni, nombre, apellido, cuil_cuit, fecha_ingreso } = req.body
     try {
       await pool.query(
-        "UPDATE medico SET dni=$1, nombre=$2, apellido=$3, cuil_cuit=$4, fecha_ingreso=$5 WHERE matricula=$6",
-        [Number(dni), nombre, apellido, cuil_cuit, fecha_ingreso, matricula],
+        "UPDATE medico SET nombre=$1, apellido=$2 WHERE matricula=$3",
+        [nombre, apellido, matricula],
       )
       res.json({ message: "Médico actualizado exitosamente" })
     } catch (err: any) {
