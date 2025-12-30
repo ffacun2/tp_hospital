@@ -213,6 +213,7 @@ pool.connect((err, client, release) => {
       await pool.query("INSERT INTO sector(tipo) VALUES($1)", [tipo])
       res.status(201).json({ message: "Sector creado exitosamente" })
     } catch (err: any) {
+      console.log(err)
       res.status(400).json({ error: err.message })
     }
   })
@@ -236,6 +237,7 @@ pool.connect((err, client, release) => {
       await pool.query("DELETE FROM sector WHERE id_sector=$1", [id])
       res.json({ message: "Sector eliminado exitosamente" })
     } catch (err: any) {
+      console.log(err)
       res.status(400).json({ error: err.message })
     }
   })

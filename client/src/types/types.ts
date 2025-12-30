@@ -3,7 +3,7 @@ export interface Guardia {
     f_inicio: string
     f_fin: string
     matricula: number
-    cod_sector: number
+    id_sector: number
     medico_nombre?: string
     sector_nombre?: string
   }
@@ -13,22 +13,14 @@ export interface Guardia {
     nombre: string
     apellido: string
   }
-  
-  export interface Sector {
-    cod_sector: number
-    nombre: string
-  }
 
   export interface Habitacion {
-    nro_habitacion: number
-    cod_sector: number
+    num_habitacion: number
+    piso: number
+    id_sector: number
     sector_nombre?: string
   }
   
-  export interface Sector {
-    cod_sector: number
-    nombre: string
-  }
 
   export interface Internacion {
     nro_internacion: number
@@ -46,11 +38,7 @@ export interface Guardia {
     apellido: string
   }
   
-  export interface Habitacion {
-    nro_habitacion: number
-  }
-
-  export interface Medico {
+export interface Medico {
     matricula: number
     dni: number
     cuil_cuit: number
@@ -71,6 +59,6 @@ export interface Guardia {
   }
 
   export interface Sector {
-    cod_sector: number
-    nombre: string
+    id_sector: number
+    tipo: string
   }
