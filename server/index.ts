@@ -572,7 +572,7 @@ pool.connect((err, client, release) => {
     console.log(`📡 API disponible en http://localhost:${PORT}`)
   })
   
-  // Enum tipo_sexo
+  // Enums labels endpoint
 app.get('/config/enums/:typename', async (req, res) => {
   const { typename } = req.params;
   try {
