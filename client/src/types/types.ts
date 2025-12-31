@@ -8,17 +8,13 @@ export interface Guardia {
     sector_nombre?: string
   }
   
-  export interface Medico {
-    matricula: number
-    nombre: string
-    apellido: string
-  }
 
   export interface Habitacion {
     num_habitacion: number
     piso: number
+    orientacion: string
     id_sector: number
-    sector_nombre?: string
+    sector?: string
   }
   
 
@@ -30,12 +26,6 @@ export interface Guardia {
     dni: number
     observaciones: string
     paciente_nombre?: string
-  }
-  
-  export interface Paciente {
-    dni: number
-    nombre: string
-    apellido: string
   }
   
 export interface Medico {

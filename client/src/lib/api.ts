@@ -74,5 +74,6 @@ export const guardiasAPI = {
 }
 
 export const enumsAPI = {
-  getTipoSexo: () => fetchAPI("/config/enums/sexo")
+  getTipoSexo: () => fetchAPI("/config/enums/sexo"),
+  getOrientacion: () => fetchAPI("/config/enums/orientacion"),
 }

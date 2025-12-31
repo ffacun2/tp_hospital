@@ -279,6 +279,7 @@ pool.connect((err, client, release) => {
   // POST create room
   app.post("/habitaciones", async (req: Request, res: Response) => {
     const { num_habitacion, piso, orientacion, id_sector } = req.body
+    console.log(req.body)
     try {
       await pool.query("INSERT INTO habitacion(num_habitacion, piso, orientacion, id_sector) VALUES ($1, $2, $3, $4)", [
         Number(num_habitacion),
