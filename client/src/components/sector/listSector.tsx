@@ -60,16 +60,6 @@ export default function ListSector() {
         <>
         <div className="mb-6">
             <div className="mb-6 flex items-center justify-between">
-                <div className="relative flex-1 mr-10">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                <input
-                    type="text"
-                    placeholder="Buscar sector..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
-                </div>
                 <button
                     onClick={() => {setShowModal(true); setEditingSector(undefined)}}
                     className="flex items-center gap-2 bg-linear-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all"
