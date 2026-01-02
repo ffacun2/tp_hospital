@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom"
-import { Home, Users, UserCog, Building, DoorOpen, Activity, Shield } from "lucide-react"
+import { Home, Users, UserCog, Building, DoorOpen, Activity, Shield, BriefcaseMedical } from "lucide-react"
 import Dashboard from "./pages/Dashboard"
 import Pacientes from "./pages/Pacientes"
 import Medicos from "./pages/Medicos"
@@ -7,6 +7,7 @@ import Sectores from "./pages/Sectores"
 import Habitaciones from "./pages/Habitaciones"
 import Internaciones from "./pages/Internaciones"
 import Guardias from "./pages/Guardias"
+import Especialidades from "./pages/Especialidades"
 
 function NavItem({ to, icon: Icon, label }: { to: string; icon: any; label: string }) {
   const location = useLocation()
@@ -48,6 +49,7 @@ function Layout() {
           <NavItem to="/" icon={Home} label="Dashboard" />
           <NavItem to="/pacientes" icon={Users} label="Pacientes" />
           <NavItem to="/medicos" icon={UserCog} label="Médicos" />
+          <NavItem to="/especialidades" icon={BriefcaseMedical} label="Especialidades" />
           <NavItem to="/sectores" icon={Building} label="Sectores" />
           <NavItem to="/habitaciones" icon={DoorOpen} label="Habitaciones" />
           <NavItem to="/internaciones" icon={Activity} label="Internaciones" />
@@ -65,6 +67,7 @@ function Layout() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/pacientes" element={<Pacientes />} />
           <Route path="/medicos" element={<Medicos />} />
+          <Route path="/especialidades" element={<Especialidades />} />
           <Route path="/sectores" element={<Sectores />} />
           <Route path="/habitaciones" element={<Habitaciones />} />
           <Route path="/internaciones" element={<Internaciones />} />
