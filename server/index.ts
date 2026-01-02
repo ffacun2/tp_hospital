@@ -168,7 +168,7 @@ app.get("/medicos/:matricula", async (req: Request, res: Response) => {
 app.post("/medicos", async (req: Request, res: Response) => {
    const { matricula, dni, nombre, apellido, cuil_cuit, especialidades, telefono} = req.body
    const client = await pool.connect()
-   console.log("Llega aca :", req.body)
+
    try {
       await client.query("BEGIN")
 
@@ -186,7 +186,7 @@ app.post("/medicos", async (req: Request, res: Response) => {
             INSERT INTO especializado_en (matricula, id_especialidad, realiza_guardia, max_guardia)
             VALUES ${values}
          `;
-         console.log(intermediateQuery)
+      
          await client.query(intermediateQuery);
       }
 
@@ -604,12 +604,46 @@ app.delete("/guardias/:id", async (req: Request, res: Response) => {
    }
 })
 
-// GET specialty list for dropdowns
+// GET specialty l
 app.get("/especialidades", async (_req: Request, res: Response) => {
    try {
       const result = await pool.query("SELECT id_especialidad, nombre FROM especialidad ORDER BY id_especialidad")
       res.json(result.rows)
    } catch (err: any) {
+      res.status(500).json({ error: err.message })
+   }
+})
+
+app.post("/especialidades", async (req: Request, res: Response) => {
+   const { nombre } = req.body
+   try {
+      await pool.query("INSERT INTO especialidad(nombre) VALUES($1)", [nombre])
+      res.status(201).json({ message: "Especialidad creada exitosamente" })
+   }
+   catch (err: any) {
+      res.status(500).json({ error: err.message })
+   }
+})
+
+app.put("/especialidades/:id", async (req: Request, res: Response) => {
+   const id = Number(req.params.id)
+   const { nombre } = req.body
+   try {
+      await pool.query("UPDATE especialidad SET nombre=$1 WHERE id_especialidad=$2", [nombre, id])
+      res.json({ message: "Especialidad actualizada exitosamente" })
+   }
+   catch (err: any) {
+      res.status(500).json({ error: err.message })
+   }
+})
+
+app.delete("/especialidades/:id", async (req: Request, res: Response) => {
+   const id = Number(req.params.id)
+   try {
+      await pool.query("DELETE FROM especialidad WHERE id_especialidad=$1", [id])
+      res.json({ message: "Especialidad eliminada exitosamente" })
+   }
+   catch (err: any) {
       res.status(500).json({ error: err.message })
    }
 })
