@@ -69,6 +69,7 @@ create table medico (
   nombre VARCHAR(30) not null,
   apellido VARCHAR(30) not null,
   cuil_cuit BIGINT unique not null,
+  telefono BIGINT unique,
   fecha_ingreso DATE not null,
   
   primary key (matricula),

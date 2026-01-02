@@ -18,7 +18,7 @@ export default function CardMedic({medico, handleEdit, handleDelete}:PropCardMed
                   <h3 className="font-bold text-lg text-slate-800">
                     Dr/a. {medico.nombre} {medico.apellido}
                   </h3>
-                  <p className="text-sm text-teal-600 font-medium">{medico.especialidad}</p>
+                  <p className="text-sm text-teal-600 font-medium">{medico.especialidades?.map(esp => esp.nombre).join(', ')}</p>
                 </div>
                 <div className="flex gap-2">
                   <button
@@ -44,9 +44,6 @@ export default function CardMedic({medico, handleEdit, handleDelete}:PropCardMed
                 </p>
                 <p className="text-slate-600">
                   <span className="font-medium">CUIL/CUIT:</span> {medico.cuil_cuit}
-                </p>
-                <p className="text-slate-600">
-                  <span className="font-medium">Especialidad:</span> {medico.especialidad}
                 </p>
                 <p className="text-slate-600">
                   <span className="font-medium">Teléfono:</span> {medico.telefono}

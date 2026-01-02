@@ -32,7 +32,7 @@ export interface Medico {
    cuil_cuit: number
    nombre: string
    apellido: string
-   especialidad: string
+   especialidades?: Especialidad[]
    telefono: string
 }
 
@@ -54,4 +54,6 @@ export interface Sector {
 export interface Especialidad {
    id_especialidad: number
    nombre: string
+   guardia? : boolean
+   max_guardia? : number
 }

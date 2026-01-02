@@ -112,16 +112,40 @@ app.delete("/pacientes/:dni", async (req: Request, res: Response) => {
 // ==================== MEDICOS ====================
 
 // GET all doctors
-app.get("/medicos", async (_req: Request, res: Response) => {
+app.get("/medicos", async (req, res) => {
    try {
-      const result = await pool.query(
-         "SELECT matricula, dni, nombre, apellido, cuil_cuit, fecha_ingreso FROM medico ORDER BY apellido, nombre",
-      )
-      res.json(result.rows)
+      const query = `
+         SELECT 
+            m.matricula, 
+            m.dni, 
+            m.cuil_cuit, 
+            m.nombre, 
+            m.apellido, 
+            m.telefono,
+            COALESCE(
+               JSON_AGG(
+                  JSON_BUILD_OBJECT(
+                     'id_especialidad', e.id_especialidad,
+                     'nombre', e.nombre,
+                     'guardia', ee.realiza_guardia,
+                     'max_guardia', ee.max_guardia
+                  )
+               ) FILTER (WHERE e.id_especialidad IS NOT NULL), 
+               '[]'
+            ) AS especialidades
+         FROM medico m
+         LEFT JOIN especializado_en ee ON m.matricula = ee.matricula
+         LEFT JOIN especialidad e ON ee.id_especialidad = e.id_especialidad
+         GROUP BY m.matricula, m.dni, m.cuil_cuit, m.nombre, m.apellido, m.telefono
+         ORDER BY m.apellido, m.nombre;
+      `;
+      
+      const result = await pool.query(query);
+      res.json(result.rows);
    } catch (err: any) {
-      res.status(500).json({ error: err.message })
+      res.status(500).json({ error: err.message });
    }
-})
+});
 
 // GET single doctor
 app.get("/medicos/:matricula", async (req: Request, res: Response) => {
@@ -142,32 +166,86 @@ app.get("/medicos/:matricula", async (req: Request, res: Response) => {
 
 // POST create doctor
 app.post("/medicos", async (req: Request, res: Response) => {
-   const { matricula, dni, nombre, apellido, cuil_cuit, fecha_ingreso } = req.body
+   const { matricula, dni, nombre, apellido, cuil_cuit, especialidades, telefono} = req.body
+   const client = await pool.connect()
+   console.log("Llega aca :", req.body)
    try {
-      await pool.query(
-         "INSERT INTO medico(matricula, dni, nombre, apellido, cuil_cuit, fecha_ingreso) VALUES ($1, $2, $3, $4, $5, $6)",
-         [Number(matricula), Number(dni), nombre, apellido, cuil_cuit, new Date()],
-      )
-      res.status(201).json({ message: "Médico creado exitosamente" })
-   } catch (err: any) {
-      res.status(400).json({ error: err.message })
+      await client.query("BEGIN")
+
+      const medicoQuery = `
+      INSERT INTO medico (matricula, dni, nombre, apellido, cuil_cuit, telefono, fecha_ingreso)
+      VALUES ($1, $2, $3, $4, $5, $6, CURRENT_DATE)`
+      await client.query(medicoQuery, [matricula, dni, nombre, apellido, cuil_cuit, telefono]);
+
+      if (especialidades && especialidades.length > 0) {
+         const values = especialidades.map((esp: any) => 
+            `(${matricula}, ${esp.id_especialidad}, ${esp.guardia}, ${esp.max_guardia})`
+         ).join(',');
+
+         const intermediateQuery = `
+            INSERT INTO especializado_en (matricula, id_especialidad, realiza_guardia, max_guardia)
+            VALUES ${values}
+         `;
+         console.log(intermediateQuery)
+         await client.query(intermediateQuery);
+      }
+
+      await client.query('COMMIT');
+      res.status(201).json({ message: "Médico creado con éxito" });
+   } catch (error: any) {
+      await client.query('ROLLBACK');
+      console.error(error);
+      res.status(400).json({ error: error.message });
+   } finally {
+      client.release();
    }
 })
 
 // PUT update doctor
 app.put("/medicos/:matricula", async (req: Request, res: Response) => {
-   const matricula = Number(req.params.matricula)
-   const { dni, nombre, apellido, cuil_cuit, fecha_ingreso } = req.body
+   const { matricula } = req.params;
+   const { nombre, apellido, telefono, especialidades } = req.body;
+
+   const client = await pool.connect();
+
    try {
-      await pool.query(
-         "UPDATE medico SET nombre=$1, apellido=$2 WHERE matricula=$3",
-         [nombre, apellido, matricula],
-      )
-      res.json({ message: "Médico actualizado exitosamente" })
-   } catch (err: any) {
-      res.status(400).json({ error: err.message })
+      await client.query('BEGIN');
+
+      const updateMedicoQuery = `
+      UPDATE medico 
+      SET nombre = $1, apellido = $2, telefono = $3
+      WHERE matricula = $4
+    `;
+      await client.query(updateMedicoQuery, [nombre, apellido, Number(telefono), matricula]);
+
+      // 2. Eliminamos las especialidades viejas en la tabla intermedia
+      await client.query('DELETE FROM especializado_en WHERE matricula = $1', [matricula]);
+
+      // 3. Insertamos las nuevas especialidades seleccionadas
+      if (especialidades && especialidades.length > 0) {
+         const ids = especialidades.map((e: any) => e.id_especialidad);
+         const guardias = especialidades.map((e: any) => e.guardia); // o hace_guardia según tu front
+         const frecuencias = especialidades.map((e: any) => e.max_guardia); // o frecuencia según tu front
+
+         const insertEspQuery = `
+            INSERT INTO especializado_en (matricula, id_especialidad, realiza_guardia, max_guardia)
+            SELECT $1, * FROM UNNEST($2::int[], $3::boolean[], $4::int[])
+         `;
+         
+         await client.query(insertEspQuery, [matricula, ids, guardias, frecuencias]);
+      }
+
+      await client.query('COMMIT'); // Si todo salió bien, guardamos
+      res.json({ message: "Médico actualizado correctamente" });
+
+   } catch (error: any) {
+      await client.query('ROLLBACK'); // Si algo falló, deshacemos todo
+      console.error("Error en PUT medico:", error);
+      res.status(500).json({ error: "Error al actualizar el médico" });
+   } finally {
+      client.release();
    }
-})
+});
 
 // DELETE doctor
 app.delete("/medicos/:matricula", async (req: Request, res: Response) => {

@@ -7,17 +7,17 @@ loadEnvFile('./.env');
 
 const app = express();
 
-console.log(process.env.PORT)
-const PORT = process.env.PORT;
+// console.log(process.env.PORT)
+const PORT = 3001;
 
 app.use(express.urlencoded({extended: true}));
 
 const pool = new Pool({
-  user: process.env.DB_USER || "postgres",
-  host: process.env.DB_HOST || "localhost",
-  database: process.env.DB_NAME || "hospital_bd",
-  password: process.env.DB_PASSWORD || "postgres",
-  port: Number.parseInt(process.env.DB_PORT || "5432"),
+   user: process.env.DB_USER || "postgres",
+   host: process.env.DB_HOST || "localhost",
+   database: process.env.DB_NAME || "hospital_bd",
+   password: process.env.DB_PASSWORD || "postgres",
+   port: Number.parseInt(process.env.DB_PORT || "5432"),
 })
 
 app.get('/', (req: Request, res: Response) => {
