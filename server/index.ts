@@ -529,7 +529,7 @@ app.delete("/guardias/:id", async (req: Request, res: Response) => {
 // GET specialty list for dropdowns
 app.get("/especialidades", async (_req: Request, res: Response) => {
    try {
-      const result = await pool.query("SELECT id_especialidad, nombre FROM especialidad ORDER BY nombre")
+      const result = await pool.query("SELECT id_especialidad, nombre FROM especialidad ORDER BY id_especialidad")
       res.json(result.rows)
    } catch (err: any) {
       res.status(500).json({ error: err.message })
