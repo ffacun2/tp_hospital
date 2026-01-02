@@ -58,6 +58,8 @@ create table paciente (
   apellido VARCHAR(30) not null,
   fecha_nac DATE not null,
   sexo SEXO not null,
+  telefono BIGINT unique,
+  direccion VARCHAR(100),
   
   primary key (dni),
 	CHECK (fecha_nac <= CURRENT_DATE)

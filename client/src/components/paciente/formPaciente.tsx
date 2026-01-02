@@ -30,18 +30,27 @@ export default function CreateFormPacient({ paciente, setShowModal, onSuccess }:
    });
 
    useEffect(() => {
-      getEnumSex()
-   }, [])
+      getEnumSex();
+   },[paciente, reset])
 
    const getEnumSex = async () => {
       try {
-         const opctions = await enumsAPI.getTipoSexo()
-         setSexOption(opctions)
+         const options = await enumsAPI.getTipoSexo();
+         setSexOption(options);
+
+         // 2. Si hay un paciente, reseteamos el formulario DESPUÉS de tener las opciones
+         if (paciente) {
+            reset({
+               ...paciente,
+               fecha_nac: formatToHTMLDate(paciente.fecha_nac),
+               sexo: String(paciente.sexo).toUpperCase() 
+            });
+         }
+      } catch (error: any) {
+         alert("Error al inicializar: " + error.message);
       }
-      catch (error: any) {
-         alert("Error al cargar los tipos_sex: " + error.message)
-      }
-   }
+   };
+
 
    const onSubmit = async (data: PacienteFormInputs) => {
       try {
@@ -118,9 +127,9 @@ export default function CreateFormPacient({ paciente, setShowModal, onSuccess }:
                      {...register("sexo", { required: "Seleccione una opción" })}
                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-hidden bg-white"
                   >
-                     {!paciente && <option value="">Seleccione un sector</option>}
+                     {!paciente && <option value="">Seleccione un sexo</option>}
                      {sexOption.map((opcion) => (
-                        <option key={opcion} value={opcion}>
+                        <option key={opcion} value={opcion.toUpperCase()}>
                            {opcion.charAt(0) + opcion.slice(1).toLowerCase()}
                         </option>
                      ))}
