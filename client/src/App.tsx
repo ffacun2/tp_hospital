@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom"
-import { Home, Users, UserCog, Building, DoorOpen, Activity, Shield, BriefcaseMedical } from "lucide-react"
+import { Home, Users, UserCog, Building, DoorOpen, Activity, Shield, BriefcaseMedical, Bed, NotepadTextDashed } from "lucide-react"
 import Dashboard from "./pages/Dashboard"
 import Pacientes from "./pages/Pacientes"
 import Medicos from "./pages/Medicos"
@@ -45,6 +45,11 @@ function Layout() {
           </div>
         </div>
 
+        <div>
+            <hr className="border-slate-200" />
+            <h4 className="block px-4 py-2 text-xs text-slate-400">General</h4>
+        </div>
+
         <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
           <NavItem to="/" icon={Home} label="Dashboard" />
           <NavItem to="/pacientes" icon={Users} label="Pacientes" />
@@ -55,7 +60,14 @@ function Layout() {
           <NavItem to="/internaciones" icon={Activity} label="Internaciones" />
           <NavItem to="/guardias" icon={Shield} label="Guardias" />
         </nav>
-
+        <div>
+            <hr className="border-slate-200" />
+            <h4 className="block px-4 py-2 text-xs text-slate-400">Reportes</h4>
+        </div>
+         <nav className="p-4 space-y-2 overflow-y-auto">
+            <NavItem to="/camas_disponibles" icon={Bed} label="Camas Disponibles" />
+            <NavItem to="/auditoria_guardia" icon={NotepadTextDashed} label="Auditoria Guardia (Admin)" />
+         </nav>
         <div className="p-4 border-t border-slate-200">
           <p className="text-xs text-slate-400 text-center">v1.0.0</p>
         </div>
@@ -72,6 +84,9 @@ function Layout() {
           <Route path="/habitaciones" element={<Habitaciones />} />
           <Route path="/internaciones" element={<Internaciones />} />
           <Route path="/guardias" element={<Guardias />} />
+          <Route path="/camas_disponibles" element={<div className="p-6">Reportes - En construcción</div>} />
+          <Route path="/auditoria_guardia" element={<div className="p-6">Reportes - En construcción</div>} />
+
         </Routes>
       </main>
     </div>
