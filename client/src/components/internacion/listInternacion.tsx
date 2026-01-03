@@ -24,7 +24,11 @@ export default function ListInternacion() {
    useEffect(() => {
       const filtered = internaciones.filter(
          (i) =>
-            i.paciente?.nombre?.toLowerCase().includes(search.toLowerCase()) ,
+            i.paciente?.nombre?.toLowerCase().concat(i.paciente?.apellido?.toLowerCase() || "").includes(search.toLowerCase())
+            || i.cama?.habitacion?.num_habitacion.toString().includes(search.toLocaleLowerCase())
+            || i.cama?.nro_cama.toString().includes(search.toLocaleLowerCase())
+            || i.medico?.nombre?.toLowerCase().concat(i.medico?.apellido?.toLowerCase() || "").includes(search.toLowerCase())
+
       )
       setFilteredInternaciones(filtered)
    }, [search, internaciones])
