@@ -1,8 +1,16 @@
 import express from "express";
 import type { Request, Response } from "express";
-import { Pool } from "pg";
-import { loadEnvFile } from "node:process";
+import {pool} from "./config/db.ts";
 import cors from "cors";
+import { loadEnvFile } from "node:process";
+import sectorRoutes from "./routes/sectorRoutes.ts";
+import pacienteRoutes from "./routes/pacienteRoutes.ts";
+import medicoRoutes from "./routes/medicoRoutes.ts";
+import habitacionRoutes from "./routes/habitacionRoutes.ts";
+import internacionRoutes from "./routes/internacionRoutes.ts";
+import enumRoutes from "./routes/enumRoutes.ts";
+import reportRoutes from "./routes/reportRoutes.ts";
+import especialidadRoutes from "./routes/especialidadRoutes.ts";
 
 loadEnvFile("./.env");
 
@@ -15,557 +23,44 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Database connection
-const pool = new Pool({
-   user: process.env.DB_USER || "postgres",
-   host: process.env.DB_HOST || "localhost",
-   database: process.env.DB_NAME || "hospital_bd",
-   password: process.env.DB_PASSWORD || "postgres",
-   port: Number.parseInt(process.env.DB_PORT || "5432"),
+
+// Start server
+app.listen(PORT, () => {
+   console.log(`🏥 Servidor Express corriendo en http://localhost:${PORT}`);
+   console.log(`📡 API disponible en http://localhost:${PORT}`);
 });
 
-// Test database connection
-pool.connect((err, client, release) => {
-   if (err) {
-      console.error("Error connecting to database:", err);
-   } else {
-      console.log("Database connected successfully");
-      release();
-   }
+// Error handler
+app.use((err: any, _req: Request, res: Response, _next: any) => {
+   console.error(err.stack);
+   res.status(500).json({ error: "Algo salió mal en el servidor" });
 });
+
 
 // ==================== PACIENTES ====================
 
-// GET all patients
-app.get("/pacientes", async (_req: Request, res: Response) => {
-   try {
-      const result = await pool.query(
-         "SELECT dni, nombre, apellido, fecha_nac, sexo FROM paciente ORDER BY apellido, nombre"
-      );
-      res.json(result.rows);
-   } catch (err: any) {
-      res.status(500).json({ error: err.message });
-   }
-});
+app.use('/pacientes', pacienteRoutes)
 
-// GET single patient
-app.get("/pacientes/:dni", async (req: Request, res: Response) => {
-   const dni = Number(req.params.dni);
-   try {
-      const result = await pool.query(
-         "SELECT dni, nombre, apellido, fecha_nac, sexo FROM paciente WHERE dni=$1",
-         [dni]
-      );
-      if (result.rowCount === 0) {
-         return res.status(404).json({ error: "Paciente no encontrado" });
-      }
-      res.json(result.rows[0]);
-   } catch (err: any) {
-      res.status(500).json({ error: err.message });
-   }
-});
-
-// POST create patient
-app.post("/pacientes", async (req: Request, res: Response) => {
-   const { dni, nombre, apellido, fecha_nac, sexo } = req.body;
-   try {
-      await pool.query(
-         "INSERT INTO paciente(dni, nombre, apellido, fecha_nac, sexo) VALUES ($1, $2, $3, $4, $5)",
-         [Number(dni), nombre, apellido, fecha_nac, sexo]
-      );
-      res.status(201).json({ message: "Paciente creado exitosamente" });
-   } catch (err: any) {
-      res.status(400).json({ error: err.message });
-   }
-});
-
-// PUT update patient
-app.put("/pacientes/:dni", async (req: Request, res: Response) => {
-   const dni = Number(req.params.dni);
-   const { nombre, apellido, f_nac, sexo } = req.body;
-   try {
-      await pool.query(
-         "UPDATE paciente SET nombre=$1, apellido=$2, fecha_nac=$3, sexo=$4 WHERE dni=$5",
-         [nombre, apellido, f_nac, sexo, dni]
-      );
-      res.json({ message: "Paciente actualizado exitosamente" });
-   } catch (err: any) {
-      res.status(400).json({ error: err.message });
-   }
-});
-
-// DELETE patient
-app.delete("/pacientes/:dni", async (req: Request, res: Response) => {
-   const dni = Number(req.params.dni);
-   try {
-      await pool.query("DELETE FROM paciente WHERE dni=$1", [dni]);
-      res.json({ message: "Paciente eliminado exitosamente" });
-   } catch (err: any) {
-      res.status(400).json({ error: err.message });
-   }
-});
 
 // ==================== MEDICOS ====================
 
-// GET all doctors
-app.get("/medicos_info", async (req, res) => {
-   try {
-      const query = `
-         SELECT 
-            m.matricula, 
-            m.dni, 
-            m.cuil_cuit, 
-            m.nombre, 
-            m.apellido, 
-            m.telefono,
-            COALESCE(
-               JSON_AGG(
-                  JSON_BUILD_OBJECT(
-                     'id_especialidad', e.id_especialidad,
-                     'nombre', e.nombre,
-                     'guardia', ee.realiza_guardia,
-                     'max_guardia', ee.max_guardia
-                  )
-               ) FILTER (WHERE e.id_especialidad IS NOT NULL), 
-               '[]'
-            ) AS especialidades
-         FROM medico m
-         LEFT JOIN especializado_en ee ON m.matricula = ee.matricula
-         LEFT JOIN especialidad e ON ee.id_especialidad = e.id_especialidad
-         GROUP BY m.matricula, m.dni, m.cuil_cuit, m.nombre, m.apellido, m.telefono
-         ORDER BY m.apellido, m.nombre;
-      `;
+app.use('/medicos', medicoRoutes)
 
-      const result = await pool.query(query);
-      res.json(result.rows);
-   } catch (err: any) {
-      res.status(500).json({ error: err.message });
-   }
-});
+// ==================== MEDICOS ====================
 
-app.get("/medicos", async (_req: Request, res: Response) => {
-   try {
-      const result = await pool.query(
-         "SELECT matricula, dni, nombre, apellido, cuil_cuit, fecha_ingreso FROM medico ORDER BY apellido, nombre"
-      );
-      res.json(result.rows);
-   } catch (err: any) {
-      res.status(500).json({ error: err.message });
-   }
-});
-
-// GET single doctor
-app.get("/medicos/:matricula", async (req: Request, res: Response) => {
-   const matricula = Number(req.params.matricula);
-   try {
-      const result = await pool.query(
-         "SELECT matricula, dni, nombre, apellido, cuil_cuit, fecha_ingreso FROM medico WHERE matricula=$1",
-         [matricula]
-      );
-      if (result.rowCount === 0) {
-         return res.status(404).json({ error: "Médico no encontrado" });
-      }
-      res.json(result.rows[0]);
-   } catch (err: any) {
-      res.status(500).json({ error: err.message });
-   }
-});
-
-// POST create doctor
-app.post("/medicos", async (req: Request, res: Response) => {
-   const {
-      matricula,
-      dni,
-      nombre,
-      apellido,
-      cuil_cuit,
-      especialidades,
-      telefono,
-   } = req.body;
-   const client = await pool.connect();
-
-   try {
-      await client.query("BEGIN");
-
-      const medicoQuery = `
-      INSERT INTO medico (matricula, dni, nombre, apellido, cuil_cuit, telefono, fecha_ingreso)
-      VALUES ($1, $2, $3, $4, $5, $6, CURRENT_DATE)`;
-      await client.query(medicoQuery, [
-         matricula,
-         dni,
-         nombre,
-         apellido,
-         cuil_cuit,
-         telefono,
-      ]);
-
-      if (especialidades && especialidades.length > 0) {
-         const values = especialidades
-            .map(
-               (esp: any) =>
-                  `(${matricula}, ${esp.id_especialidad}, ${esp.guardia}, ${esp.max_guardia})`
-            )
-            .join(",");
-
-         const intermediateQuery = `
-            INSERT INTO especializado_en (matricula, id_especialidad, realiza_guardia, max_guardia)
-            VALUES ${values}
-         `;
-
-         await client.query(intermediateQuery);
-      }
-
-      await client.query("COMMIT");
-      res.status(201).json({ message: "Médico creado con éxito" });
-   } catch (error: any) {
-      await client.query("ROLLBACK");
-      console.error(error);
-      res.status(400).json({ error: error.message });
-   } finally {
-      client.release();
-   }
-});
-
-// PUT update doctor
-app.put("/medicos/:matricula", async (req: Request, res: Response) => {
-   const { matricula } = req.params;
-   const { nombre, apellido, telefono, especialidades } = req.body;
-
-   const client = await pool.connect();
-
-   try {
-      await client.query("BEGIN");
-
-      const updateMedicoQuery = `
-      UPDATE medico 
-      SET nombre = $1, apellido = $2, telefono = $3
-      WHERE matricula = $4
-    `;
-      await client.query(updateMedicoQuery, [
-         nombre,
-         apellido,
-         Number(telefono),
-         matricula,
-      ]);
-
-      // 2. Eliminamos las especialidades viejas en la tabla intermedia
-      await client.query("DELETE FROM especializado_en WHERE matricula = $1", [
-         matricula,
-      ]);
-
-      // 3. Insertamos las nuevas especialidades seleccionadas
-      if (especialidades && especialidades.length > 0) {
-         const ids = especialidades.map((e: any) => e.id_especialidad);
-         const guardias = especialidades.map((e: any) => e.guardia); // o hace_guardia según tu front
-         const frecuencias = especialidades.map((e: any) => e.max_guardia); // o frecuencia según tu front
-
-         const insertEspQuery = `
-            INSERT INTO especializado_en (matricula, id_especialidad, realiza_guardia, max_guardia)
-            SELECT $1, * FROM UNNEST($2::int[], $3::boolean[], $4::int[])
-         `;
-
-         await client.query(insertEspQuery, [
-            matricula,
-            ids,
-            guardias,
-            frecuencias,
-         ]);
-      }
-
-      await client.query("COMMIT"); // Si todo salió bien, guardamos
-      res.json({ message: "Médico actualizado correctamente" });
-   } catch (error: any) {
-      await client.query("ROLLBACK"); // Si algo falló, deshacemos todo
-      console.error("Error en PUT medico:", error);
-      res.status(500).json({ error: "Error al actualizar el médico" });
-   } finally {
-      client.release();
-   }
-});
-
-// DELETE doctor
-app.delete("/medicos/:matricula", async (req: Request, res: Response) => {
-   const matricula = Number(req.params.matricula);
-   try {
-      await pool.query("DELETE FROM medico WHERE matricula=$1", [matricula]);
-      res.json({ message: "Médico eliminado exitosamente" });
-   } catch (err: any) {
-      res.status(400).json({ error: err.message });
-   }
-});
+app.use('/especialidades', especialidadRoutes)
 
 // ==================== SECTORES ====================
 
-// GET all sectors
-app.get("/sectores", async (_req: Request, res: Response) => {
-   try {
-      const result = await pool.query(
-         "SELECT id_sector, tipo FROM sector ORDER BY id_sector"
-      );
-      res.json(result.rows);
-   } catch (err: any) {
-      res.status(500).json({ error: err.message });
-   }
-});
-
-// GET single sector
-app.get("/sectores/:id", async (req: Request, res: Response) => {
-   const id = Number(req.params.id);
-   try {
-      const result = await pool.query(
-         "SELECT id_sector, tipo FROM sector WHERE id_sector=$1",
-         [id]
-      );
-      if (result.rowCount === 0) {
-         return res.status(404).json({ error: "Sector no encontrado" });
-      }
-      res.json(result.rows[0]);
-   } catch (err: any) {
-      res.status(500).json({ error: err.message });
-   }
-});
-
-// POST create sector
-app.post("/sectores", async (req: Request, res: Response) => {
-   const { tipo } = req.body;
-   try {
-      await pool.query("INSERT INTO sector(tipo) VALUES($1)", [tipo]);
-      res.status(201).json({ message: "Sector creado exitosamente" });
-   } catch (err: any) {
-      console.log(err);
-      res.status(400).json({ error: err.message });
-   }
-});
-
-// PUT update sector
-app.put("/sectores/:id", async (req: Request, res: Response) => {
-   const id = Number(req.params.id);
-   const { tipo } = req.body;
-   try {
-      await pool.query("UPDATE sector SET tipo=$1 WHERE id_sector=$2", [
-         tipo,
-         id,
-      ]);
-      res.json({ message: "Sector actualizado exitosamente" });
-   } catch (err: any) {
-      res.status(400).json({ error: err.message });
-   }
-});
-
-// DELETE sector
-app.delete("/sectores/:id", async (req: Request, res: Response) => {
-   const id = Number(req.params.id);
-   try {
-      await pool.query("DELETE FROM sector WHERE id_sector=$1", [id]);
-      res.json({ message: "Sector eliminado exitosamente" });
-   } catch (err: any) {
-      console.log(err);
-      res.status(400).json({ error: err.message });
-   }
-});
+app.use('/sectores', sectorRoutes)
 
 // ==================== HABITACIONES ====================
 
-// GET all rooms
-app.get("/habitaciones", async (_req: Request, res: Response) => {
-   try {
-      const result = await pool.query(`
-        SELECT 
-         h.num_habitacion, 
-         h.piso, 
-         h.orientacion, 
-         JSON_BUILD_OBJECT(
-            'id_sector', s.id_sector,
-            'tipo', s.tipo
-         ) AS sector
-        FROM habitacion h
-        JOIN sector s ON s.id_sector = h.id_sector
-        ORDER BY h.num_habitacion
-      `);
-      res.json(result.rows);
-   } catch (err: any) {
-      res.status(500).json({ error: err.message });
-   }
-});
-
-// GET single room
-app.get("/habitaciones/:num", async (req: Request, res: Response) => {
-   const num_habitacion = Number(req.params.num);
-   try {
-      const result = await pool.query(
-         "SELECT num_habitacion, piso, orientacion, id_sector FROM habitacion WHERE num_habitacion=$1",
-         [num_habitacion]
-      );
-      if (result.rowCount === 0) {
-         return res.status(404).json({ error: "Habitación no encontrada" });
-      }
-      res.json(result.rows[0]);
-   } catch (err: any) {
-      res.status(500).json({ error: err.message });
-   }
-});
-
-// POST create room
-app.post("/habitaciones", async (req: Request, res: Response) => {
-   const { num_habitacion, piso, orientacion, id_sector } = req.body;
-   try {
-      await pool.query(
-         "INSERT INTO habitacion(num_habitacion, piso, orientacion, id_sector) VALUES ($1, $2, $3, $4)",
-         [Number(num_habitacion), Number(piso), orientacion, Number(id_sector)]
-      );
-      res.status(201).json({ message: "Habitación creada exitosamente" });
-   } catch (err: any) {
-      res.status(400).json({ error: err.message });
-   }
-});
-
-// PUT update room
-app.put("/habitaciones/:num", async (req: Request, res: Response) => {
-   const num_habitacion = Number(req.params.num);
-   const { piso, orientacion, id_sector } = req.body;
-   try {
-      await pool.query(
-         "UPDATE habitacion SET piso=$1, orientacion=$2, id_sector=$3 WHERE num_habitacion=$4",
-         [Number(piso), orientacion, Number(id_sector), num_habitacion]
-      );
-      res.json({ message: "Habitación actualizada exitosamente" });
-   } catch (err: any) {
-      res.status(400).json({ error: err.message });
-   }
-});
-
-// DELETE room
-app.delete("/habitaciones/:num", async (req: Request, res: Response) => {
-   const num_habitacion = Number(req.params.num);
-   const client = await pool.connect();
-   try {
-      await client.query("BEGIN");
-      await client.query("DELETE FROM corresponde WHERE num_habitacion=$1", [
-         num_habitacion,
-      ]);
-      await client.query("DELETE FROM cama WHERE num_habitacion=$1", [
-         num_habitacion,
-      ]);
-      await client.query("DELETE FROM incluye WHERE num_habitacion=$1", [
-         num_habitacion,
-      ]);
-      await client.query("DELETE FROM habitacion WHERE num_habitacion=$1", [
-         num_habitacion,
-      ]);
-      await client.query("COMMIT");
-      res.json({ message: "Habitación eliminada exitosamente" });
-   } catch (err: any) {
-      await client.query("ROLLBACK");
-      res.status(400).json({ error: err.message });
-   } finally {
-      client.release();
-   }
-});
+app.use('/habitaciones', habitacionRoutes)
 
 // ==================== INTERNACIONES ====================
 
-// GET all internments
-app.get("/internaciones", async (_req: Request, res: Response) => {
-   try {
-      const result = await pool.query(`
-        SELECT 
-          i.id_internacion,
-          i.fecha_inicio,
-          i.fecha_fin,
-          -- Construimos el objeto médico
-          JSON_BUILD_OBJECT(
-            'matricula', m.matricula,
-            'nombre', m.nombre,
-            'apellido', m.apellido
-          ) AS medico,
-          -- Construimos el objeto paciente
-          JSON_BUILD_OBJECT(
-            'dni', p.dni,
-            'nombre', p.nombre,
-            'apellido', p.apellido
-          ) AS paciente
-        FROM internacion i
-        JOIN medico m ON m.matricula = i.matricula
-        JOIN paciente p ON p.dni = i.dni
-        ORDER BY i.id_internacion
-      `);
-      res.json(result.rows);
-   } catch (err: any) {
-      res.status(500).json({ error: err.message });
-   }
-});
-
-// GET single internment
-app.get("/internaciones/:id", async (req: Request, res: Response) => {
-   const id = Number(req.params.id);
-   try {
-      const result = await pool.query(
-         `SELECT id_internacion, fecha_inicio, fecha_fin, matricula, dni 
-         FROM internacion WHERE id_internacion=$1`,
-         [id]
-      );
-      if (result.rowCount === 0) {
-         return res.status(404).json({ error: "Internación no encontrada" });
-      }
-      res.json(result.rows[0]);
-   } catch (err: any) {
-      res.status(500).json({ error: err.message });
-   }
-});
-
-// POST create internment
-app.post("/internaciones", async (req: Request, res: Response) => {
-   const { fecha_inicio, fecha_fin, matricula, dni } = req.body;
-   try {
-      const fechaFinValue = fecha_fin && fecha_fin !== "" ? fecha_fin : null;
-      await pool.query(
-         "INSERT INTO internacion(fecha_inicio, fecha_fin, matricula, dni) VALUES ($1, $2, $3, $4)",
-         [fecha_inicio, fechaFinValue, Number(matricula), Number(dni)]
-      );
-      res.status(201).json({ message: "Internación creada exitosamente" });
-   } catch (err: any) {
-      res.status(400).json({ error: err.message });
-   }
-});
-
-// PUT update internment
-app.put("/internaciones/:id", async (req: Request, res: Response) => {
-   const id = Number(req.params.id);
-   const { fecha_inicio, fecha_fin, matricula, dni } = req.body;
-   try {
-      const fechaFinValue = fecha_fin && fecha_fin !== "" ? fecha_fin : null;
-      await pool.query(
-         "UPDATE internacion SET fecha_inicio=$1, fecha_fin=$2, matricula=$3, dni=$4 WHERE id_internacion=$5",
-         [fecha_inicio, fechaFinValue, Number(matricula), Number(dni), id]
-      );
-      res.json({ message: "Internación actualizada exitosamente" });
-   } catch (err: any) {
-      res.status(400).json({ error: err.message });
-   }
-});
-
-// DELETE internment
-app.delete("/internaciones/:id", async (req: Request, res: Response) => {
-   const id = Number(req.params.id);
-   const client = await pool.connect();
-   try {
-      await client.query("BEGIN");
-      await client.query(
-         "DELETE FROM comentario_recorrido WHERE id_internacion=$1",
-         [id]
-      );
-      await client.query("DELETE FROM corresponde WHERE id_internacion=$1", [id]);
-      await client.query("DELETE FROM incluye WHERE id_internacion=$1", [id]);
-      await client.query("DELETE FROM internacion WHERE id_internacion=$1", [id]);
-      await client.query("COMMIT");
-      res.json({ message: "Internación eliminada exitosamente" });
-   } catch (err: any) {
-      await client.query("ROLLBACK");
-      res.status(400).json({ error: err.message });
-   } finally {
-      client.release();
-   }
-});
+app.use('/internaciones', internacionRoutes)
 
 // GET internment followup/comments
 app.get(
@@ -672,59 +167,13 @@ app.delete("/guardias/:id", async (req: Request, res: Response) => {
    }
 });
 
-// GET specialty l
-app.get("/especialidades", async (_req: Request, res: Response) => {
-   try {
-      const result = await pool.query(
-         "SELECT id_especialidad, nombre FROM especialidad ORDER BY id_especialidad"
-      );
-      res.json(result.rows);
-   } catch (err: any) {
-      res.status(500).json({ error: err.message });
-   }
-});
-
-app.post("/especialidades", async (req: Request, res: Response) => {
-   const { nombre } = req.body;
-   try {
-      await pool.query("INSERT INTO especialidad(nombre) VALUES($1)", [nombre]);
-      res.status(201).json({ message: "Especialidad creada exitosamente" });
-   } catch (err: any) {
-      res.status(500).json({ error: err.message });
-   }
-});
-
-app.put("/especialidades/:id", async (req: Request, res: Response) => {
-   const id = Number(req.params.id);
-   const { nombre } = req.body;
-   try {
-      await pool.query(
-         "UPDATE especialidad SET nombre=$1 WHERE id_especialidad=$2",
-         [nombre, id]
-      );
-      res.json({ message: "Especialidad actualizada exitosamente" });
-   } catch (err: any) {
-      res.status(500).json({ error: err.message });
-   }
-});
-
-app.delete("/especialidades/:id", async (req: Request, res: Response) => {
-   const id = Number(req.params.id);
-   try {
-      await pool.query("DELETE FROM especialidad WHERE id_especialidad=$1", [id]);
-      res.json({ message: "Especialidad eliminada exitosamente" });
-   } catch (err: any) {
-      res.status(500).json({ error: err.message });
-   }
-});
-
 // GET audit report
 app.get("/reportes/auditoria", async (_req: Request, res: Response) => {
    try {
       const result = await pool.query(`
-        SELECT 
-          id_auditoria,
-          accion,
+         SELECT 
+         id_auditoria,
+         accion,
           usuario,
           to_char(fecha_auditoria, 'DD/MM/YYYY HH24:MI:SS') as fecha,
           id_guardia,
@@ -742,61 +191,12 @@ app.get("/reportes/auditoria", async (_req: Request, res: Response) => {
    }
 });
 
-// Error handler
-app.use((err: any, _req: Request, res: Response, _next: any) => {
-   console.error(err.stack);
-   res.status(500).json({ error: "Algo salió mal en el servidor" });
-});
 
-// Start server
-app.listen(PORT, () => {
-   console.log(`🏥 Servidor Express corriendo en http://localhost:${PORT}`);
-   console.log(`📡 API disponible en http://localhost:${PORT}`);
-});
 
-// Enums labels endpoint
-app.get("/config/enums/:typename", async (req, res) => {
-   const { typename } = req.params;
-   try {
-      const result = await pool.query(
-         `
-          SELECT enumlabel 
-          FROM pg_enum 
-          JOIN pg_type ON pg_enum.enumtypid = pg_type.oid 
-          WHERE pg_type.typname = $1
-          ORDER BY enumsortorder`,
-         [typename.toLowerCase()]
-      );
+// ==================== ENUMS ====================
 
-      if (result.rowCount === 0) {
-         return res.status(404).json({ message: "Tipo de dato no encontrado" });
-      }
+app.use('/config/enums', enumRoutes);
 
-      const labels = result.rows.map((r) => r.enumlabel);
-      res.json(labels);
-   } catch (err: any) {
-      res.status(500).json({ error: err.message });
-   }
-});
+// ==================== REPORTES ====================
 
-app.get('/reportes/camas-disponibles-sector', async (_req: Request, res: Response) => {
-   try {
-      // 1. Obtener el resumen (Conteo)
-      const resumenResult = await pool.query('SELECT * FROM sp_cantidad_camas_libres_por_sector()');
-
-      res.json(resumenResult.rows);
-   } catch (err: any) {
-      res.status(500).json({ error: err.message });
-   }
-});
-
-app.get('/reportes/camas-disponibles-detalle', async (_req: Request, res: Response) => {
-   try {
-      // 2. Obtener el detalle completo
-      const detalleResult = await pool.query('SELECT * FROM sp_detalle_camas_disponibles()');
-
-      res.json(detalleResult.rows);
-   } catch (err: any) {
-      res.status(500).json({ error: err.message });
-   }
-});
+app.use('/reportes', reportRoutes);
