@@ -5,7 +5,6 @@ import LoadingSpinner from "../loadingSpinner";
 import CardRoom from "./cardRoom";
 import { habitacionesAPI } from "../../lib/api";
 import CreateFormRoom from "./formRoom";
-import { set } from "react-hook-form";
 
 
 export default function ListRooms() {
@@ -25,8 +24,8 @@ export default function ListRooms() {
       const filtered = habitaciones.filter(
          (h) =>
             h.num_habitacion.toString().includes(search) 
-         || h.sector?.toLowerCase().includes(search.toLowerCase())
-         || (h.sector && h.sector.toLowerCase().includes(search.toLowerCase()))
+         || h.sector?.tipo.toLowerCase().includes(search.toLowerCase())
+         || (h.sector?.tipo && h.sector?.tipo.toLowerCase().includes(search.toLowerCase()))
          || h.piso?.toString().includes(search),
       )
       setFilteredHabitaciones(filtered)

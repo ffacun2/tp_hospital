@@ -10,18 +10,15 @@ interface PropFormRoom {
    onSuccess?: () => void
 }
 
-type RoomFormInputs = Habitacion
-
 export default function CreateFormRoom({ habitacion, setShowModal, onSuccess }: PropFormRoom) {
    const [sectores, setSectores] = useState<Sector[]>([])
    const [orientaciones, setOrientaciones] = useState<string[]>([])
-   const { register, handleSubmit, reset, formState: { errors } } = useForm<RoomFormInputs>({
+   const { register, handleSubmit, reset } = useForm<any>({
       defaultValues: {
          num_habitacion: habitacion ? habitacion.num_habitacion : 0,
-         id_sector: habitacion ? String(habitacion.id_sector) as any : 0 as any,
+         id_sector: habitacion ? String(habitacion.sector?.id_sector) as any : 0 as any,
          piso: habitacion ? habitacion.piso : 0,
          orientacion: habitacion ? habitacion.orientacion : "",
-         sector: habitacion ? habitacion.sector : "",
       }
    })
 
@@ -34,8 +31,8 @@ export default function CreateFormRoom({ habitacion, setShowModal, onSuccess }: 
       if (sectores.length > 0 && habitacion) {
          reset({
             ...habitacion,
-            id_sector: String(habitacion.id_sector) as any,
-            orientacion: String(habitacion.orientacion),
+            id_sector: String(habitacion.sector?.id_sector) as any,
+            orientacion: String(habitacion.orientacion).toLocaleUpperCase(),
          });
       }
    }, [sectores, habitacion, reset]);
@@ -60,7 +57,7 @@ export default function CreateFormRoom({ habitacion, setShowModal, onSuccess }: 
       }
    }
 
-   const onSubmit = async (formData: RoomFormInputs) => {
+   const onSubmit = async (formData: any) => {
       try {
          const data = {
             num_habitacion: formData.num_habitacion,
@@ -139,7 +136,7 @@ export default function CreateFormRoom({ habitacion, setShowModal, onSuccess }: 
                   >
                      {!habitacion && <option value="">Seleccione una orientación</option>}
                      {orientaciones.map((orientacion) => (
-                        <option key={orientacion} value={orientacion}>
+                        <option key={orientacion} value={String(orientacion).toLocaleUpperCase()}>
                            {orientacion}
                         </option>
                      ))}

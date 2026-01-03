@@ -15,7 +15,7 @@ export default function CardRoom( {habitacion, handleEdit, handleDelete}:PropCar
               <div className="flex justify-between items-start mb-4">
                 <div className="flex-1">
                   <h3 className="font-bold text-2xl text-slate-800">#{habitacion.num_habitacion}</h3>
-                  <p className="text-sm text-orange-600 font-medium mt-1">{habitacion.sector}</p>
+                  <p className="text-sm text-orange-600 font-medium mt-1">{habitacion.sector?.tipo.replace("_"," ")}</p>
                   <p className="text-sm text-slate-600 mt-1">Piso: {habitacion.piso}</p>
                   <p className="text-sm text-slate-600 mt-1">Orientación: {habitacion.orientacion}</p>
                 </div>
