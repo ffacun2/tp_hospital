@@ -34,7 +34,6 @@ export default function ListMedic() {
       try {
          setLoading(true)
          const data = await medicosAPI.getAll()
-         console.log(data.at(1))
          setMedicos(data)
          setFilteredMedicos(data)
       } catch (error: any) {
