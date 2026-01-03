@@ -1,7 +1,7 @@
 import { Plus, Search } from "lucide-react"
 import { useEffect, useState } from "react"
-import type { Internacion } from "../../types/types"
-import { internacionesAPI } from "../../lib/api"
+import type { Internacion, Medico, Paciente } from "../../types/types"
+import { internacionesAPI, medicosAPI, pacientesAPI } from "../../lib/api"
 import LoadingSpinner from "../loadingSpinner"
 import CardInternacion from "./cardInternacion"
 import FormInternacion from "./formInternacion"
@@ -9,6 +9,8 @@ import FormInternacion from "./formInternacion"
 
 export default function ListInternacion() {
    const [internaciones, setInternaciones] = useState<Internacion[]>([])
+   const [pacientes, setPacientes] = useState<Paciente[]>([])
+   const [medicos, setMedicos] = useState<Medico[]>([])
    const [filteredInternaciones, setFilteredInternaciones] = useState<Internacion[]>([])
    const [search, setSearch] = useState("")
    const [showModal, setShowModal] = useState(false)
@@ -31,9 +33,15 @@ export default function ListInternacion() {
       try {
          setLoading(true)
          const internacionesData = await internacionesAPI.getAll()
+         const [pacientesData, medicosData] = await Promise.all([
+            pacientesAPI.getAll(),
+            medicosAPI.getAll(),
+         ])
 
          setInternaciones(internacionesData)
          setFilteredInternaciones(internacionesData)
+         setPacientes(pacientesData)
+         setMedicos(medicosData)
       } catch (error: any) {
          alert("Error al cargar datos: " + error.message)
       } finally {
@@ -92,7 +100,7 @@ export default function ListInternacion() {
          }
 
          {
-            showModal && <FormInternacion internacion={editingInternacion} setShowModal={setShowModal} onSuccess={loadData} />
+            showModal && <FormInternacion internacion={editingInternacion} pacientes={pacientes} medicos={medicos} setShowModal={setShowModal} onSuccess={loadData} />
          }
 
       </>

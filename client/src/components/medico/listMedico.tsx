@@ -33,7 +33,7 @@ export default function ListMedic() {
    const loadMedicos = async () => {
       try {
          setLoading(true)
-         const data = await medicosAPI.getAll()
+         const data = await medicosAPI.getAllInfo()
          setMedicos(data)
          setFilteredMedicos(data)
       } catch (error: any) {

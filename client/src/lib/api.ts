@@ -32,6 +32,7 @@ export const pacientesAPI = {
 // Médicos
 export const medicosAPI = {
    getAll: () => fetchAPI("/medicos"),
+   getAllInfo: () => fetchAPI("/medicos_info"),
    getById: (id: number) => fetchAPI(`/medicos/${id}`),
    create: (data: any) => fetchAPI("/medicos", { method: "POST", body: JSON.stringify(data) }),
    update: (id: number, data: any) => fetchAPI(`/medicos/${id}`, { method: "PUT", body: JSON.stringify(data) }),

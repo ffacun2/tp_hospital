@@ -1,33 +1,44 @@
 import { useForm } from "react-hook-form"
-import type { Internacion } from "../../types/types"
+import type { Internacion, Medico, Paciente } from "../../types/types"
 import { internacionesAPI } from "../../lib/api"
 import { X } from "lucide-react"
+import { useEffect } from "react"
+import { formatToHTMLDate } from "../../utils/formatDate"
 
 
 interface FormInternacionProps {
    internacion?: Internacion
+   pacientes: Paciente[]
+   medicos: Medico[]
    setShowModal: (show: boolean) => void
    onSuccess: () => void
 }
 
-export default function FormInternacion({internacion, setShowModal, onSuccess}: FormInternacionProps) {
-   const {register, handleSubmit, reset, formState: { errors }, control } = useForm<any>({
+export default function FormInternacion({ internacion, pacientes, medicos, setShowModal, onSuccess }: FormInternacionProps) {
+   const { register, handleSubmit, reset, formState: { errors }, getValues } = useForm<any>({
       defaultValues: {
-         fecha_inicio: internacion?.fecha_inicio || "",
-         fecha_fin: internacion?.fecha_fin || "",
+         fecha_inicio: formatToHTMLDate(internacion?.fecha_inicio) || "",
+         fecha_fin: internacion?.fecha_fin && formatToHTMLDate(internacion?.fecha_fin) || "",
+         dni: String(internacion?.paciente?.dni) || "",
+         matricula: String(internacion?.medico?.matricula) || ""
       }
    })
 
+   useEffect(() => {
+      if (internacion) {
+         reset({
+            ...internacion,
+            fecha_inicio: formatToHTMLDate(internacion.fecha_inicio),
+            fecha_fin: internacion.fecha_fin ? formatToHTMLDate(internacion.fecha_fin) : "",
+            dni: String(internacion?.paciente?.dni) || "",
+            matricula: String(internacion?.medico?.matricula) || ""
+         });
+      }
+   }, [internacion, pacientes, medicos,reset]);
 
-   const onSubmit = async (data : any) => {
+
+   const onSubmit = async (data: any) => {
       try {
-         // const data = {
-         //    f_ingreso: formData.f_ingreso,
-         //    f_alta: formData.f_alta || null,
-         //    nro_habitacion: Number.parseInt(formData.nro_habitacion),
-         //    nro_historial_clinico: Number.parseInt(formData.nro_historial_clinico),
-         //    observaciones: formData.observaciones,
-         // }
 
          if (internacion) {
             await internacionesAPI.update(internacion.id_internacion, data)
@@ -35,17 +46,17 @@ export default function FormInternacion({internacion, setShowModal, onSuccess}: 
             await internacionesAPI.create(data)
          }
          onSuccess()
-         
+
       } catch (error: any) {
          alert("Error: " + error.message)
       }
    }
 
-      const closeAndReset = () => {
-         setShowModal(false)
-         reset()
-      }
-         
+   const closeAndReset = () => {
+      setShowModal(false)
+      reset()
+   }
+
    return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
          <div className="bg-white rounded-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
@@ -61,23 +72,49 @@ export default function FormInternacion({internacion, setShowModal, onSuccess}: 
                <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Paciente</label>
                   <select
+                     {...register("dni", { required: "El paciente es obligatorio" })}
                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                   >
-                     <option value="">Seleccione un paciente</option>
+                     {internacion?.paciente && <option value="">Seleccione un paciente</option>}
+                     {
+                        pacientes.map((paciente) => (
+                           <option
+                              key={paciente.dni}
+                              value={String(paciente.dni)}
+                           >
+                              {paciente.apellido} {paciente.nombre} - DNI: {paciente.dni}
+                           </option>
+                        ))
+                     }
                   </select>
                </div>
                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Habitación</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Médico</label>
                   <select
+                     {...register("matricula", { required: "El médico es obligatorio" })}
                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                   >
-                     <option value="">Seleccione una habitación</option>
+                     {internacion?.medico && <option value="">Seleccione un médico</option>}
+                     {
+                        medicos.map((medico) => (
+                           <option
+                              key={medico.matricula}
+                              value={String(medico.matricula)}
+                           >
+                              {medico.apellido} {medico.nombre} - DNI: {medico.matricula}
+                           </option>
+                        ))
+                     }
                   </select>
                </div>
                <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Fecha de Ingreso</label>
                   <input
                      type="date"
+                     {...register("fecha_inicio", {
+                        required: "La fecha es obligatoria",
+                        validate: (val) => new Date(val) <= new Date() || "La fecha no puede ser futura"
+                     })}
                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                   />
                </div>
@@ -85,6 +122,9 @@ export default function FormInternacion({internacion, setShowModal, onSuccess}: 
                   <label className="block text-sm font-medium text-slate-700 mb-1">Fecha de Alta (opcional)</label>
                   <input
                      type="date"
+                     {...register("fecha_fin", {
+                        validate: (val) => !val || new Date(val) >= new Date(getValues("fecha_inicio")) || "La fecha de alta no puede ser anterior a la de ingreso"
+                     })}
                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                   />
                </div>
