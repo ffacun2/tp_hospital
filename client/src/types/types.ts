@@ -8,13 +8,18 @@ export interface Guardia {
    sector_nombre?: string
 }
 
+export interface Cama {
+   id_cama: number
+   nro_cama: number
+   estado: string
+   habitacion: Habitacion
+}
 
 export interface Habitacion {
    num_habitacion: number
    piso: number
    orientacion: string
-   id_sector: number
-   sector?: string
+   sector?: Sector
 }
 
 
@@ -22,8 +27,9 @@ export interface Internacion {
    id_internacion: number
    fecha_inicio: string
    fecha_fin: string | null
-   dni: number
-   matricula: number
+   medico: Medico
+   paciente: Paciente
+   cama: Cama
 }
 
 export interface Medico {
