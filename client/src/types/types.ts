@@ -63,3 +63,16 @@ export interface Especialidad {
    guardia? : boolean
    max_guardia? : number
 }
+
+export interface ReporteCamas {
+   sector: string
+   cantidad_disponible: number   
+}
+
+export interface ReporteCamasDetalle {
+   nombre_sector: string
+   piso: number
+   num_habitacion: string
+   num_cama: string
+   orientacion: string
+}

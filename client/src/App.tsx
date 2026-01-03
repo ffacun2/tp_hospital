@@ -8,6 +8,7 @@ import Habitaciones from "./pages/Habitaciones"
 import Internaciones from "./pages/Internaciones"
 import Guardias from "./pages/Guardias"
 import Especialidades from "./pages/Especialidades"
+import InformeDisponibilidad from "./pages/InformeDisponibilidad"
 
 function NavItem({ to, icon: Icon, label }: { to: string; icon: any; label: string }) {
   const location = useLocation()
@@ -84,7 +85,7 @@ function Layout() {
           <Route path="/habitaciones" element={<Habitaciones />} />
           <Route path="/internaciones" element={<Internaciones />} />
           <Route path="/guardias" element={<Guardias />} />
-          <Route path="/camas_disponibles" element={<div className="p-6">Reportes - En construcción</div>} />
+          <Route path="/camas_disponibles" element={<InformeDisponibilidad />} />
           <Route path="/auditoria_guardia" element={<div className="p-6">Reportes - En construcción</div>} />
 
         </Routes>

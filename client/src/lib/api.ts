@@ -88,3 +88,8 @@ export const especialidadesAPI = {
    delete: (id: number) => fetchAPI(`/especialidades/${id}`, { method: "DELETE" }),
    update: (id: number, data: any) => fetchAPI(`/especialidades/${id}`, { method: "PUT", body: JSON.stringify(data) }),
 }
+
+export const reportesAPI = {
+   getCamasDisponiblesResumen: () => fetchAPI("/reportes/camas-disponibles-sector"),
+   getCamasDisponiblesDetalle: () => fetchAPI("/reportes/camas-disponibles-detalle"),
+}

@@ -75,7 +75,7 @@ export default function FormInternacion({ internacion, pacientes, medicos, setSh
                      {...register("dni", { required: "El paciente es obligatorio" })}
                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                   >
-                     {internacion?.paciente && <option value="">Seleccione un paciente</option>}
+                     {!internacion?.paciente && <option value="">Seleccione un paciente</option>}
                      {
                         pacientes.map((paciente) => (
                            <option
@@ -94,7 +94,7 @@ export default function FormInternacion({ internacion, pacientes, medicos, setSh
                      {...register("matricula", { required: "El médico es obligatorio" })}
                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                   >
-                     {internacion?.medico && <option value="">Seleccione un médico</option>}
+                     {!internacion?.medico && <option value="">Seleccione un médico</option>}
                      {
                         medicos.map((medico) => (
                            <option

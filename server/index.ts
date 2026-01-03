@@ -778,3 +778,25 @@ app.get("/config/enums/:typename", async (req, res) => {
       res.status(500).json({ error: err.message });
    }
 });
+
+app.get('/reportes/camas-disponibles-sector', async (_req: Request, res: Response) => {
+   try {
+      // 1. Obtener el resumen (Conteo)
+      const resumenResult = await pool.query('SELECT * FROM sp_cantidad_camas_libres_por_sector()');
+
+      res.json(resumenResult.rows);
+   } catch (err: any) {
+      res.status(500).json({ error: err.message });
+   }
+});
+
+app.get('/reportes/camas-disponibles-detalle', async (_req: Request, res: Response) => {
+   try {
+      // 2. Obtener el detalle completo
+      const detalleResult = await pool.query('SELECT * FROM sp_detalle_camas_disponibles()');
+
+      res.json(detalleResult.rows);
+   } catch (err: any) {
+      res.status(500).json({ error: err.message });
+   }
+});
