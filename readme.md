@@ -54,11 +54,10 @@ El diseño de la base de datos sigue un modelo relacional estricto con las sigui
 ## 🛠️ Instalación y Configuración
 
 - Configurar variables de entorno para PostgreSQL en `src/config/db.ts`.
-<br>
-<br>
-   ```
+
+   ``` .env
    /server/.env
-   # Database Configuration
+   #Database Configuration
    DB_USER=
    DB_USER=
    DB_HOST=
@@ -66,8 +65,9 @@ El diseño de la base de datos sigue un modelo relacional estricto con las sigui
    DB_PASSWORD=
    DB_PORT=
 
-   # Server Configuration
+   #Server Configuration
    PORT=
+   
    ```
 **Ejecución**
 - Desde la raíz del repositorio:
