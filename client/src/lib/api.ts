@@ -33,7 +33,7 @@ export const pacientesAPI = {
 export const medicosAPI = {
    getAll: () => fetchAPI("/medicos"),
    getAllInfo: () => fetchAPI("/medicos/info"),
-   getById: (id: number) => fetchAPI(`/medicos/${id}`),
+   getMedicoByMatricula: (id: number) => fetchAPI(`/medicos/${id}`),
    create: (data: any) => fetchAPI("/medicos", { method: "POST", body: JSON.stringify(data) }),
    update: (id: number, data: any) => fetchAPI(`/medicos/${id}`, { method: "PUT", body: JSON.stringify(data) }),
    delete: (id: number) => fetchAPI(`/medicos/${id}`, { method: "DELETE" }),
@@ -64,6 +64,7 @@ export const internacionesAPI = {
    create: (data: any) => fetchAPI("/internaciones", { method: "POST", body: JSON.stringify(data) }),
    update: (id: number, data: any) => fetchAPI(`/internaciones/${id}`, { method: "PUT", body: JSON.stringify(data) }),
    delete: (id: number) => fetchAPI(`/internaciones/${id}`, { method: "DELETE" }),
+   getDetallesById: (id: number) => fetchAPI(`/internaciones/${id}/seguimiento`)
 }
 
 // Guardias

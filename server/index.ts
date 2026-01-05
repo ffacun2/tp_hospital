@@ -62,6 +62,16 @@ app.use('/habitaciones', habitacionRoutes)
 
 app.use('/internaciones', internacionRoutes)
 
+// ==================== ENUMS ====================
+
+app.use('/config/enums', enumRoutes);
+
+// ==================== REPORTES ====================
+
+app.use('/reportes', reportRoutes);
+
+// ==================== INTERNACIONES ====================
+
 // GET internment followup/comments
 app.get(
    "/internaciones/:id/seguimiento",
@@ -193,10 +203,3 @@ app.get("/reportes/auditoria", async (_req: Request, res: Response) => {
 
 
 
-// ==================== ENUMS ====================
-
-app.use('/config/enums', enumRoutes);
-
-// ==================== REPORTES ====================
-
-app.use('/reportes', reportRoutes);

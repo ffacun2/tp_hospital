@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom"
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import { Home, Users, UserCog, Building, DoorOpen, Activity, Shield, BriefcaseMedical, Bed, NotepadTextDashed } from "lucide-react"
 import Dashboard from "./pages/Dashboard"
 import Pacientes from "./pages/Pacientes"
@@ -9,25 +9,11 @@ import Internaciones from "./pages/Internaciones"
 import Guardias from "./pages/Guardias"
 import Especialidades from "./pages/Especialidades"
 import InformeDisponibilidad from "./pages/InformeDisponibilidad"
+import NavItem from "./components/navItem"
+import InternacionDetalle from "./pages/InternacionDetalle"
+import MedicoDetalle from "./pages/MedicoDetalle"
 
-function NavItem({ to, icon: Icon, label }: { to: string; icon: any; label: string }) {
-  const location = useLocation()
-  const isActive = location.pathname === to
 
-  return (
-    <Link
-      to={to}
-      className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-        isActive
-          ? "bg-linear-to-r from-teal-500 to-cyan-500 text-white shadow-lg"
-          : "text-slate-600 hover:bg-slate-100"
-      }`}
-    >
-      <Icon className="w-5 h-5" />
-      <span className="font-medium">{label}</span>
-    </Link>
-  )
-}
 
 function Layout() {
   return (
@@ -80,10 +66,12 @@ function Layout() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/pacientes" element={<Pacientes />} />
           <Route path="/medicos" element={<Medicos />} />
+          <Route path="/medicos/:matricula" element={<MedicoDetalle />} />
           <Route path="/especialidades" element={<Especialidades />} />
           <Route path="/sectores" element={<Sectores />} />
           <Route path="/habitaciones" element={<Habitaciones />} />
           <Route path="/internaciones" element={<Internaciones />} />
+          <Route path="/internaciones/:id/seguimiento" element={<InternacionDetalle />} />
           <Route path="/guardias" element={<Guardias />} />
           <Route path="/camas_disponibles" element={<InformeDisponibilidad />} />
           <Route path="/auditoria_guardia" element={<div className="p-6">Reportes - En construcción</div>} />

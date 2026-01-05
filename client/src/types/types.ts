@@ -30,6 +30,7 @@ export interface Internacion {
    medico: Medico
    paciente: Paciente
    cama: Cama
+   comentarios_recorrido?: ComentarioRecorrido[]
 }
 
 export interface Medico {
@@ -75,4 +76,9 @@ export interface ReporteCamasDetalle {
    num_habitacion: string
    num_cama: string
    orientacion: string
+}
+
+export interface ComentarioRecorrido {
+   nro_comentario: number
+   texto: string
 }

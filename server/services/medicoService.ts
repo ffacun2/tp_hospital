@@ -39,7 +39,32 @@ export const getAllMedicos = async () => {
 }
 
 export const getMedicoByMatricula = async (matricula: string) => {
-   const query = `SELECT matricula, dni, cuil_cuit, nombre, apellido, telefono FROM medico WHERE matricula = $1`;
+   const query = `
+      SELECT 
+         m.matricula, 
+         m.dni, 
+         m.cuil_cuit, 
+         m.nombre, 
+         m.apellido, 
+         m.telefono,
+         COALESCE(
+            JSON_AGG(
+               JSON_BUILD_OBJECT(
+                  'id_especialidad', e.id_especialidad,
+                  'nombre', e.nombre,
+                  'guardia', ee.realiza_guardia,
+                  'max_guardia', ee.max_guardia
+               )
+            ) FILTER (WHERE e.id_especialidad IS NOT NULL), 
+            '[]'
+         ) AS especialidades
+         FROM medico m
+         LEFT JOIN especializado_en ee ON m.matricula = ee.matricula
+         LEFT JOIN especialidad e ON ee.id_especialidad = e.id_especialidad
+         WHERE m.matricula = $1
+         GROUP BY m.matricula, m.dni, m.cuil_cuit, m.nombre, m.apellido, m.telefono
+         ORDER BY m.apellido, m.nombre;
+      `;
    const result = await pool.query(query, [matricula]);
    return result.rows[0];
 }

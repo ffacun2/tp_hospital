@@ -5,6 +5,7 @@ import { Plus, Search } from "lucide-react"
 import CreateFormMedic from "./formMedico"
 import LoadingSpinner from "../loadingSpinner"
 import CardMedic from "./cardMedico"
+import { Link } from "react-router-dom"
 
 
 export default function ListMedic() {
@@ -87,7 +88,11 @@ export default function ListMedic() {
             <LoadingSpinner />
          ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-               {filteredMedicos.map((medico) => (<CardMedic medico={medico} handleEdit={handleEdit} handleDelete={handleDelete} />))}
+               {filteredMedicos.map((medico) => (
+                  <Link to={`/medicos/${medico.matricula}`}>
+                     <CardMedic medico={medico} handleEdit={handleEdit} handleDelete={handleDelete} />
+                  </Link>
+                  ))}
             </div>
          )}
          {showModal && <CreateFormMedic medico={editingMedic} setShowModal={setShowModal} onSuccess={loadMedicos} />}

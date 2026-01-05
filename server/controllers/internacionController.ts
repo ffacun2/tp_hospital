@@ -55,3 +55,30 @@ export const deleteInternacion = async (req: Request, res: Response) => {
       res.status(500).json({ error: error.message });
    }
 };
+
+export const seguimientoInternacion = async (req: Request, res: Response) => {
+   const { id } = req.params;
+   try {
+      const seguimiento = await internacionService.seguimientoInternacion(Number(id));
+      res.json(seguimiento);
+   } catch (error: any) {
+      res.status(500).json({ error: error.message });
+   }
+};
+
+export const detalleInternacion = async (req: Request, res: Response) => {
+   const { id } = req.params;
+   try {
+      const detalles = await internacionService.detalleInternacion(Number(id));
+      if (detalles) {
+         res.json(detalles)
+      } 
+      else {
+         res.status(404).json({ error: "Internación no encontrada" });
+      }
+   }
+   catch (error: any) {
+      console.log(error)
+      res.status(500).json({ error: error.message})
+   }
+}

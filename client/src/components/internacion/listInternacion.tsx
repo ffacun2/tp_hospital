@@ -5,6 +5,7 @@ import { internacionesAPI, medicosAPI, pacientesAPI } from "../../lib/api"
 import LoadingSpinner from "../loadingSpinner"
 import CardInternacion from "./cardInternacion"
 import FormInternacion from "./formInternacion"
+import { Link } from "react-router-dom"
 
 
 export default function ListInternacion() {
@@ -98,7 +99,11 @@ export default function ListInternacion() {
                <LoadingSpinner />
             ) : (
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {filteredInternaciones.map((internacion) => (<CardInternacion internacion={internacion} handleEdit={handleEdit} handleDelete={handleDelete}/>))}
+                  {filteredInternaciones.map((internacion) => (
+                     <Link to={`/internaciones/${internacion.id_internacion}/seguimiento`}>
+                        <CardInternacion internacion={internacion} handleEdit={handleEdit} handleDelete={handleDelete}/>
+                     </Link>
+                     ))}
                </div>
             )
          }
