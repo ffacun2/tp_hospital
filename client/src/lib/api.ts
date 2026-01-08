@@ -1,3 +1,4 @@
+import type { Paciente } from "../types/types";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000"
 
@@ -12,21 +13,26 @@ async function fetchAPI(endpoint: string, options?: RequestInit) {
       },
    })
 
+   // 1. Obtenemos el texto plano de la respuesta
+   const text = await response.text();
+
+   // 2. Intentamos parsear solo si hay contenido
+   const data = text ? JSON.parse(text) : null;
+
    if (!response.ok) {
-      const error = await response.json().catch(() => ({ message: "Error desconocido" }))
-      throw new Error(error.message || "Error en la petición")
+      throw new Error(data?.message || "Error en la petición")
    }
 
-   return response.json()
+   return data
 }
 
 // Pacientes
 export const pacientesAPI = {
-   getAll: () => fetchAPI("/pacientes"),
-   getById: (id: number) => fetchAPI(`/pacientes/${id}`),
-   create: (data: any) => fetchAPI("/pacientes", { method: "POST", body: JSON.stringify(data) }),
-   update: (id: number, data: any) => fetchAPI(`/pacientes/${id}`, { method: "PUT", body: JSON.stringify(data) }),
-   delete: (id: number) => fetchAPI(`/pacientes/${id}`, { method: "DELETE" }),
+   getAll: (): Promise<Paciente[]> => fetchAPI("/pacientes"),
+   getById: (id: number): Promise<Paciente> => fetchAPI(`/pacientes/${id}`),
+   create: (data: any): Promise<Paciente> => fetchAPI("/pacientes", { method: "POST", body: JSON.stringify(data) }),
+   update: (id: number, data: any): Promise<Paciente> => fetchAPI(`/pacientes/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+   delete: (id: number): Promise<void> => fetchAPI(`/pacientes/${id}`, { method: "DELETE" }),
 }
 
 // Médicos

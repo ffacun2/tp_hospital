@@ -1,21 +1,20 @@
-"use client"
 
-import { enumsAPI, pacientesAPI } from "../../lib/api"
+import { enumsAPI } from "../../lib/api"
 import { X } from "lucide-react"
 import type { Paciente } from "../../types/types";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { formatToHTMLDate } from "../../utils/formatDate";
+import type { PacienteFormInputs } from "../../schemas/pacienteSchemas";
+import { usePacientes } from "../../hooks/usePaciente";
 
 interface PropFromPacient {
    paciente?: Paciente;
    setShowModal: (boolean: boolean) => void;
-   onSuccess?: () => void;
 }
 
-type PacienteFormInputs = Paciente
-
-export default function CreateFormPacient({ paciente, setShowModal, onSuccess }: PropFromPacient) {
+export default function CreateFormPacient({ paciente, setShowModal }: PropFromPacient) {
+   const { updatePaciente, createPaciente } = usePacientes();
    const [sexOption, setSexOption] = useState<string[]>([]);
    const { register, handleSubmit, reset, formState: { errors } } = useForm<PacienteFormInputs>({
       defaultValues: {
@@ -31,19 +30,18 @@ export default function CreateFormPacient({ paciente, setShowModal, onSuccess }:
 
    useEffect(() => {
       getEnumSex();
-   },[paciente, reset])
+   }, [paciente, reset])
 
    const getEnumSex = async () => {
       try {
          const options = await enumsAPI.getTipoSexo();
          setSexOption(options);
-
          // 2. Si hay un paciente, reseteamos el formulario DESPUÉS de tener las opciones
          if (paciente) {
             reset({
                ...paciente,
                fecha_nac: formatToHTMLDate(paciente.fecha_nac),
-               sexo: String(paciente.sexo).toUpperCase() 
+               sexo: String(paciente.sexo).toUpperCase()
             });
          }
       } catch (error: any) {
@@ -57,13 +55,11 @@ export default function CreateFormPacient({ paciente, setShowModal, onSuccess }:
          if (paciente) {
             // Si editamos, extraemos el DNI y enviamos el resto
             const { dni, ...updateData } = data;
-            await pacientesAPI.update(paciente.dni, updateData);
+            updatePaciente({ id: paciente.dni, data: updateData });
          }
          else {
-            await pacientesAPI.create(data);
+            createPaciente(data);
          }
-
-         if (onSuccess) onSuccess();
          closeAndReset();
       }
       catch (error: any) {
@@ -77,7 +73,7 @@ export default function CreateFormPacient({ paciente, setShowModal, onSuccess }:
    };
 
    return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
          <div className="bg-white rounded-xl p-6 w-full max-w-md">
             <div className="flex justify-between items-center mb-4">
                <h2 className="text-2xl font-bold text-slate-800">{paciente ? "Editar Paciente" : "Nuevo Paciente"}</h2>
@@ -86,6 +82,7 @@ export default function CreateFormPacient({ paciente, setShowModal, onSuccess }:
                </button>
             </div>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+               {/* Nombre */}
                <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Nombre</label>
                   <input
@@ -93,7 +90,9 @@ export default function CreateFormPacient({ paciente, setShowModal, onSuccess }:
                      {...register("nombre", { required: "El nombre es obligatorio" })}
                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-hidden"
                   />
+                  {errors.nombre && <p className="text-red-500">{errors.nombre.message}</p>}
                </div>
+               {/* Apellido */}
                <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Apellido</label>
                   <input
@@ -101,7 +100,9 @@ export default function CreateFormPacient({ paciente, setShowModal, onSuccess }:
                      {...register("apellido", { required: "El apellido es obligatorio" })}
                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-hidden"
                   />
+                  {errors.apellido && <p className="text-red-500">{errors.apellido.message}</p>}
                </div>
+               {/* DNI */}
                {!paciente && <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">DNI</label>
                   <input
@@ -109,7 +110,9 @@ export default function CreateFormPacient({ paciente, setShowModal, onSuccess }:
                      {...register("dni", { required: "El DNI es obligatorio" })}
                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-hidden"
                   />
+                  {errors.dni && <p className="text-red-500">{errors.dni.message}</p>}
                </div>}
+               {/* Fecha de Nacimiento */}
                <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Fecha de Nacimiento</label>
                   <input
@@ -120,7 +123,9 @@ export default function CreateFormPacient({ paciente, setShowModal, onSuccess }:
                      })}
                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-hidden"
                   />
+                  {errors.fecha_nac && <p className="text-red-500">{errors.fecha_nac.message}</p>}
                </div>
+               {/* Sexo */}
                <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Sexo</label>
                   <select
@@ -134,7 +139,9 @@ export default function CreateFormPacient({ paciente, setShowModal, onSuccess }:
                         </option>
                      ))}
                   </select>
+                  {errors.sexo && <p className="text-red-500">{errors.sexo.message}</p>}
                </div>
+               {/* Domicilio */}
                <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Domicilio</label>
                   <input
@@ -142,7 +149,9 @@ export default function CreateFormPacient({ paciente, setShowModal, onSuccess }:
                      {...register("domicilio")}
                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-hidden"
                   />
+                  {errors.domicilio && <p className="text-red-500">{errors.domicilio.message}</p>}
                </div>
+               {/* Telefono */}
                <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Telefono</label>
                   <input
@@ -150,7 +159,9 @@ export default function CreateFormPacient({ paciente, setShowModal, onSuccess }:
                      {...register("telefono")}
                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-hidden"
                   />
+                  {errors.telefono && <p className="text-red-500">{errors.telefono.message}</p>}
                </div>
+               {/* Botones */}
                <div className="flex gap-3 pt-4">
                   <button
                      type="button"
