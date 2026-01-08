@@ -19,13 +19,21 @@ export default function CardInternacion({ internacion, handleEdit, handleDelete 
             </div>
             <div className="flex gap-2">
                <button
-                  onClick={() => handleEdit(internacion)}
+                  onClick={(e) => {
+                     e.preventDefault()
+                     e.stopPropagation()
+                     handleEdit(internacion)
+                  }}
                   className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
                >
                   <Edit className="w-4 h-4" />
                </button>
                <button
-                  onClick={() => handleDelete(internacion.id_internacion)}
+                  onClick={(e) => {
+                     e.preventDefault()
+                     e.stopPropagation()
+                     handleDelete(internacion.id_internacion)
+                  }}
                   className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                >
                   <Trash2 className="w-4 h-4" />
@@ -49,7 +57,7 @@ export default function CardInternacion({ internacion, handleEdit, handleDelete 
                   <span>En curso</span>
                </p>
             )}
-            
+
          </div>
       </div>
    )

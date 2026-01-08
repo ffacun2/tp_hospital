@@ -11,10 +11,9 @@ interface FormInternacionProps {
    pacientes: Paciente[]
    medicos: Medico[]
    setShowModal: (show: boolean) => void
-   onSuccess: () => void
 }
 
-export default function FormInternacion({ internacion, pacientes, medicos, setShowModal, onSuccess }: FormInternacionProps) {
+export default function FormInternacion({ internacion, pacientes, medicos, setShowModal }: FormInternacionProps) {
    const { register, handleSubmit, reset, formState: { errors }, getValues } = useForm<any>({
       defaultValues: {
          fecha_inicio: formatToHTMLDate(internacion?.fecha_inicio) || "",
@@ -34,7 +33,7 @@ export default function FormInternacion({ internacion, pacientes, medicos, setSh
             matricula: String(internacion?.medico?.matricula) || ""
          });
       }
-   }, [internacion, pacientes, medicos,reset]);
+   }, [internacion, pacientes, medicos, reset]);
 
 
    const onSubmit = async (data: any) => {
@@ -45,8 +44,6 @@ export default function FormInternacion({ internacion, pacientes, medicos, setSh
          } else {
             await internacionesAPI.create(data)
          }
-         onSuccess()
-
       } catch (error: any) {
          alert("Error: " + error.message)
       }
@@ -58,7 +55,7 @@ export default function FormInternacion({ internacion, pacientes, medicos, setSh
    }
 
    return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
          <div className="bg-white rounded-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
                <h2 className="text-2xl font-bold text-slate-800">
@@ -69,6 +66,7 @@ export default function FormInternacion({ internacion, pacientes, medicos, setSh
                </button>
             </div>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+               {/* DNI paciente*/}
                <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Paciente</label>
                   <select
@@ -87,7 +85,11 @@ export default function FormInternacion({ internacion, pacientes, medicos, setSh
                         ))
                      }
                   </select>
+                  {errors.dni?.message && (
+                     <p className="text-red-500">{String(errors.dni.message)}</p>
+                  )}
                </div>
+               {/* Matricula medico */}
                <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Médico</label>
                   <select
@@ -106,7 +108,11 @@ export default function FormInternacion({ internacion, pacientes, medicos, setSh
                         ))
                      }
                   </select>
+                  {errors.matricula?.message && (
+                     <p className="text-red-500">{String(errors.matricula.message)}</p>
+                  )}
                </div>
+               {/* Fecha de Ingreso */}
                <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Fecha de Ingreso</label>
                   <input
@@ -117,7 +123,11 @@ export default function FormInternacion({ internacion, pacientes, medicos, setSh
                      })}
                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                   />
+                  {errors.fecha_inicio?.message && (
+                     <p className="text-red-500">{String(errors.fecha_inicio.message)}</p>
+                  )}
                </div>
+               {/* Fecha de Alta */}
                <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Fecha de Alta (opcional)</label>
                   <input
@@ -127,14 +137,23 @@ export default function FormInternacion({ internacion, pacientes, medicos, setSh
                      })}
                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                   />
+                  {errors.fecha_fin?.message && (
+                     <p className="text-red-500">{String(errors.fecha_fin.message)}</p>
+                  )}
                </div>
+               {/* Observaciones */}
                <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Observaciones</label>
                   <textarea
                      rows={3}
+                     {...register("observaciones")}
                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                   />
+                  {errors.observaciones?.message && (
+                     <p className="text-red-500">{String(errors.observaciones.message)}</p>
+                  )}
                </div>
+               {/* Botones */}
                <div className="flex gap-3 pt-4">
                   <button
                      type="button"
