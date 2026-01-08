@@ -3,7 +3,10 @@ Este proyecto es una aplicación web integral diseñada para gestionar pacientes
 El enfoque principal fue el diseño de la base de datos, diagrama ENTIDAD - RELACION, normalización, Triggers y Procedures.
 
 ## 🚀 Arquitectura del Proyecto
-El sistema utiliza un stack PERN (PostgreSQL, Express, React, Node.js) con un fuerte enfoque en TypeScript para garantizar la integridad de los datos en todas las capas.
+El sistema utiliza un stack PERN (PostgreSQL, Express, React, Node.js) potenciado con:
+- **TypeScript:** Tipado estático en todo flujo de datos.
+- **Zod:** Validación de esquemas en cliente. Se usó `z.infer<typeof schema>` para generar automaticamente interfaces de `TypeScript` a partir de los esquemas de `Zod`.
+- **TanStack Query:** Sincronizacion eficiente del estado del servidor con la UI.
 ## 🛠️ Servidor (Backend)
 El backend se realizó en una Arquitectura de Capas, lo que facilita el mantenimiento y escalado.
 
@@ -22,7 +25,8 @@ El backend se realizó en una Arquitectura de Capas, lo que facilita el mantenim
 Desarrollado con React y TypeScript, enfocado en una experiencia de usuario fluida y tipada.
 
 **Componentes Principales**
-- **Gestión de Formularios:** Uso de `react-hook-form` para validación dinámica y manejo de estados complejos (objetos anidados).
+- **Gestión de Estado Asíncrono:** Implementacion de `useQuery` y `useMutation` para el manejo de caché, estados de carga y error, evitando el uso de `useEffect`.
+- **Gestión de Formularios:** Uso de `react-hook-form` y `Zod`para validación dinámica y manejo de estados complejos (objetos anidados).
 - **Navegación:** Implementación de `react-router-dom` con manejo de parámetros dinámicos (useParams) y estados de navegación (useLocation).
 - **Vistas de Detalle:** Componentes especializados para "Seguimiento de Internación" y "Perfil de Médico" con carga de datos asíncrona.
 - **UI Dinámica:** Lógica de visualización basada en datos, como la selección automática de avatars/iconos según el sexo del profesional.
