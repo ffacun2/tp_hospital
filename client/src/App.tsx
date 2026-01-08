@@ -9,7 +9,7 @@ import Internaciones from "./pages/Internaciones"
 import Guardias from "./pages/Guardias"
 import Especialidades from "./pages/Especialidades"
 import InformeDisponibilidad from "./pages/InformeDisponibilidad"
-import NavItem from "./components/navItem"
+import NavItem from "./components/ui/navItem"
 import InternacionDetalle from "./pages/InternacionDetalle"
 import MedicoDetalle from "./pages/MedicoDetalle"
 

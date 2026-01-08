@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Stethoscope, Contact, Activity } from 'lucide-react';
 import type { Medico } from '../types/types';
 import { medicosAPI } from '../lib/api';
-import BackButton from '../components/backButton';
+import BackButton from '../components/ui/backButton';
 
 export default function MedicoDetalles() {
    const { matricula } = useParams<{ matricula: string }>();

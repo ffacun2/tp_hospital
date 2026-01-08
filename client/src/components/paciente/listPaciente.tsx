@@ -4,7 +4,7 @@ import type { Paciente } from "../../types/types"
 import CardPacient from "./cardPaciente"
 import { Plus, Search, AlertCircle } from "lucide-react"
 import CreateFormPacient from "./formPaciente"
-import LoadingSpinner from "../loadingSpinner"
+import LoadingSpinner from "../ui/loadingSpinner"
 import { usePacientes } from "../../hooks/usePaciente"
 
 export default function ListPaciente() {

@@ -1,7 +1,7 @@
 import { Plus, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { Habitacion } from "../../types/types";
-import LoadingSpinner from "../loadingSpinner";
+import LoadingSpinner from "../ui/loadingSpinner";
 import CardRoom from "./cardRoom";
 import { habitacionesAPI } from "../../lib/api";
 import CreateFormRoom from "./formRoom";
@@ -23,10 +23,10 @@ export default function ListRooms() {
    useEffect(() => {
       const filtered = habitaciones.filter(
          (h) =>
-            h.num_habitacion.toString().includes(search) 
-         || h.sector?.tipo.toLowerCase().includes(search.toLowerCase())
-         || (h.sector?.tipo && h.sector?.tipo.toLowerCase().includes(search.toLowerCase()))
-         || h.piso?.toString().includes(search),
+            h.num_habitacion.toString().includes(search)
+            || h.sector?.tipo.toLowerCase().includes(search.toLowerCase())
+            || (h.sector?.tipo && h.sector?.tipo.toLowerCase().includes(search.toLowerCase()))
+            || h.piso?.toString().includes(search),
       )
       setFilteredHabitaciones(filtered)
    }, [search, habitaciones])
@@ -79,7 +79,7 @@ export default function ListRooms() {
                   />
                </div>
                <button
-                  onClick={() => {setShowModal(true);setEditingRoom(undefined)}}
+                  onClick={() => { setShowModal(true); setEditingRoom(undefined) }}
                   className="flex items-center gap-2 bg-linear-to-r from-orange-500 to-red-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all"
                >
                   <Plus className="w-5 h-5" />

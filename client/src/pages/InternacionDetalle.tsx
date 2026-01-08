@@ -2,7 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import type { Internacion } from "../types/types";
 import { useEffect, useState } from "react";
 import { internacionesAPI } from "../lib/api";
-import BackButton from "../components/backButton";
+import BackButton from "../components/ui/backButton";
 
 export default function InternacionDetalle() {
    const { id } = useParams<{ id: string }>();
