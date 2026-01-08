@@ -10,5 +10,6 @@ router.post("/", internacionController.createInternacion);
 router.put("/:id", internacionController.updateInternacion);
 router.delete("/:id", internacionController.deleteInternacion);
 router.get("/:id/seguimiento", internacionController.detalleInternacion);
+router.get("/medico/:matricula", internacionController.getInternacionesByMedico);
 
 export default router;

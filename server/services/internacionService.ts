@@ -185,3 +185,46 @@ WHERE i.id_internacion = $1;
    const { rows } = await pool.query(query, [id])
    return rows[0];
 };
+
+
+export const getInternacionesByMedico = async (matricula: number) => {
+   const query = `
+   SELECT 
+   i.id_internacion,
+   i.fecha_inicio,
+   i.fecha_fin,
+   -- Objeto Paciente
+   JSON_BUILD_OBJECT(
+       'dni', p.dni,
+       'nombre', p.nombre,
+       'apellido', p.apellido
+   ) AS paciente,
+   -- Objeto de la Cama Actual (o última asignada)
+   (SELECT JSON_BUILD_OBJECT(
+       'id_cama', c.num_cama,
+       'nro_cama', c.num_cama,
+       'habitacion', JSON_BUILD_OBJECT(
+           'num_habitacion', h.num_habitacion,
+           'piso', h.piso,
+           'orientacion', h.orientacion,
+           'sector', JSON_BUILD_OBJECT (
+               'id_sector', s.id_sector,
+               'tipo', s.tipo
+           )
+       )
+   )
+   FROM CORRESPONDE cor
+   JOIN CAMA c ON cor.num_cama = c.num_cama AND cor.num_habitacion = c.num_habitacion
+   JOIN HABITACION h ON c.num_habitacion = h.num_habitacion
+   JOIN SECTOR s ON h.id_sector = s.id_sector
+   WHERE cor.id_internacion = i.id_internacion
+   ORDER BY cor.fecha DESC, cor.hora DESC
+   LIMIT 1) AS cama
+   FROM internacion i
+   JOIN paciente p ON i.dni = p.dni
+   WHERE matricula = $1
+   ORDER BY id_internacion;
+   `;
+   const { rows } = await pool.query(query, [matricula]);
+   return rows;
+};

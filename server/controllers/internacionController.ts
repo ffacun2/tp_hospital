@@ -72,13 +72,23 @@ export const detalleInternacion = async (req: Request, res: Response) => {
       const detalles = await internacionService.detalleInternacion(Number(id));
       if (detalles) {
          res.json(detalles)
-      } 
+      }
       else {
          res.status(404).json({ error: "Internación no encontrada" });
       }
    }
    catch (error: any) {
       console.log(error)
-      res.status(500).json({ error: error.message})
+      res.status(500).json({ error: error.message })
    }
 }
+
+export const getInternacionesByMedico = async (req: Request, res: Response) => {
+   const { matricula } = req.params;
+   try {
+      const internaciones = await internacionService.getInternacionesByMedico(Number(matricula));
+      res.json(internaciones);
+   } catch (error) {
+      res.status(500).json({ error: "Error fetching internaciones" });
+   }
+};

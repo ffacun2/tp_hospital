@@ -70,7 +70,8 @@ export const internacionesAPI = {
    create: (data: any) => fetchAPI("/internaciones", { method: "POST", body: JSON.stringify(data) }),
    update: (id: number, data: any) => fetchAPI(`/internaciones/${id}`, { method: "PUT", body: JSON.stringify(data) }),
    delete: (id: number) => fetchAPI(`/internaciones/${id}`, { method: "DELETE" }),
-   getDetallesById: (id: number) => fetchAPI(`/internaciones/${id}/seguimiento`)
+   getDetallesById: (id: number) => fetchAPI(`/internaciones/${id}/seguimiento`),
+   getIntenacionesByMedico: (id: number) => fetchAPI(`/internaciones/medico/${id}`)
 }
 
 // Guardias
