@@ -1,48 +1,26 @@
-import { useEffect, useState } from "react"
+import { useMemo, useState } from "react"
 import type { Medico } from "../../types/types"
-import { medicosAPI } from "../../lib/api"
-import { Plus, Search } from "lucide-react"
+import { AlertCircle, Plus, Search } from "lucide-react"
 import CreateFormMedic from "./formMedico"
 import LoadingSpinner from "../loadingSpinner"
 import CardMedic from "./cardMedico"
 import { Link } from "react-router-dom"
+import { useMedicos } from "../../hooks/useMedico"
 
 
 export default function ListMedic() {
-   const [medicos, setMedicos] = useState<Medico[]>([])
-   const [filteredMedicos, setFilteredMedicos] = useState<Medico[]>([])
+   const { medicos, isLoading, isError, deleteMedico } = useMedicos()
    const [search, setSearch] = useState("")
    const [showModal, setShowModal] = useState(false)
    const [editingMedic, setEditingMedic] = useState<Medico | undefined>(undefined)
-   const [loading, setLoading] = useState(false)
 
-
-   useEffect(() => {
-      loadMedicos()
-   }, [])
-
-   useEffect(() => {
-      const filtered = medicos.filter(
-         (m) =>
-            m.nombre.toLowerCase().includes(search.toLowerCase())
-            || m.apellido.toLowerCase().includes(search.toLowerCase())
-            || m.especialidades?.map(esp => esp.nombre).join(', ').toLowerCase().includes(search.toLowerCase())
-            )
-    setFilteredMedicos(filtered)
-    }, [search, medicos])
-
-   const loadMedicos = async () => {
-      try {
-         setLoading(true)
-         const data = await medicosAPI.getAllInfo()
-         setMedicos(data)
-         setFilteredMedicos(data)
-      } catch (error: any) {
-         alert("Error al cargar médicos: " + error.message)
-      } finally {
-         setLoading(false)
-      }
-   }
+   const filteredMedicos = useMemo(() => {
+      return medicos.filter((m) =>
+         m.nombre.toLowerCase().includes(search.toLowerCase())
+         || m.apellido.toLowerCase().includes(search.toLowerCase())
+         || m.especialidades?.map(esp => esp.nombre).join(', ').toLowerCase().includes(search.toLowerCase())
+      )
+   }, [search, medicos])
 
    const handleEdit = (medico: Medico) => {
       setEditingMedic(medico)
@@ -51,14 +29,15 @@ export default function ListMedic() {
 
    const handleDelete = async (id: number) => {
       if (confirm("¿Está seguro de eliminar este médico?")) {
-         try {
-            await medicosAPI.delete(id)
-            loadMedicos()
-         } catch (error: any) {
-            alert("Error al eliminar: " + error.message)
-         }
+         deleteMedico(id)
       }
    }
+
+   if (isError) return (
+      <div className="flex items-center gap-2 text-red-500 p-4">
+         <AlertCircle className="w-5 h-5" /> Error al conectar con el servidor.
+      </div>
+   );
 
    return (
       <>
@@ -84,18 +63,32 @@ export default function ListMedic() {
             </div>
          </div>
 
-         {loading ? (
-            <LoadingSpinner />
+         {isLoading ? (
+            <div className="flex justify-center py-20">
+               <LoadingSpinner />
+            </div>
          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-               {filteredMedicos.map((medico) => (
-                  <Link to={`/medicos/${medico.matricula}`}>
-                     <CardMedic medico={medico} handleEdit={handleEdit} handleDelete={handleDelete} />
-                  </Link>
-                  ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+               {filteredMedicos.length > 0 ? (
+                  filteredMedicos.map((medico) => (
+                     <Link to={`/medicos/${medico.matricula}`}>
+                        <CardMedic
+                           key={medico.matricula}
+                           medico={medico}
+                           handleEdit={handleEdit}
+                           handleDelete={handleDelete}
+                        />
+                     </Link>
+                  ))
+               ) : (
+                  <p className="col-span-full text-center text-slate-500 py-10">
+                     No se encontraron médicos que coincidan con la búsqueda.
+                  </p>
+               )}
             </div>
          )}
-         {showModal && <CreateFormMedic medico={editingMedic} setShowModal={setShowModal} onSuccess={loadMedicos} />}
+
+         {showModal && <CreateFormMedic medico={editingMedic} setShowModal={setShowModal} />}
       </>
    )
 }

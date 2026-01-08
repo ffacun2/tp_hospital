@@ -3,14 +3,15 @@ import { especialidadesAPI, medicosAPI } from "../../lib/api";
 import type { Especialidad, Medico } from "../../types/types";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useMedicos } from "../../hooks/useMedico";
 
 interface PropFormMedic {
    medico?: Medico;
    setShowModal: (boolean: boolean) => void;
-   onSuccess?: () => void;
 }
 
-export default function CreateFormMedic({ medico, setShowModal, onSuccess }: PropFormMedic) {
+export default function CreateFormMedic({ medico, setShowModal }: PropFormMedic) {
+   const { updateMedico, createMedico } = useMedicos()
    const [especialidades, setEspecialidades] = useState<Especialidad[]>([]);
 
    const { register, handleSubmit, reset, formState: { errors }, control } = useForm<any>({
@@ -74,11 +75,10 @@ export default function CreateFormMedic({ medico, setShowModal, onSuccess }: Pro
 
          if (medico) {
             const { matricula, ...payload } = medicoFinal;
-            await medicosAPI.update(matricula, payload);
+            updateMedico({ id: matricula, data: payload });
          } else {
-            await medicosAPI.create(medicoFinal);
+            createMedico(medicoFinal);
          }
-         if (onSuccess) onSuccess();
          closeAndReset();
       } catch (error: any) {
          alert("Error: " + error.message);
@@ -112,6 +112,9 @@ export default function CreateFormMedic({ medico, setShowModal, onSuccess }: Pro
                         {...register("nombre", { required: "Obligatorio" })}
                         className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
                      />
+                     {errors.nombre?.message && (
+                        <p className="text-red-500">{String(errors.nombre.message)}</p>
+                     )}
                   </div>
                   <div>
                      <label className="block text-xs font-semibold text-slate-500 uppercase mb-1 ml-1">Apellido</label>
@@ -120,6 +123,9 @@ export default function CreateFormMedic({ medico, setShowModal, onSuccess }: Pro
                         {...register("apellido", { required: "Obligatorio" })}
                         className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
                      />
+                     {errors.apellido?.message && (
+                        <p className="text-red-500">{String(errors.apellido.message)}</p>
+                     )}
                   </div>
                </div>
 
@@ -133,6 +139,9 @@ export default function CreateFormMedic({ medico, setShowModal, onSuccess }: Pro
                            {...register("dni", { required: true })}
                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
                         />
+                        {errors.dni?.message && (
+                           <p className="text-red-500">{String(errors.dni.message)}</p>
+                        )}
                      </div>
                      <div>
                         <label className="block text-xs font-semibold text-slate-500 uppercase mb-1 ml-1">Matrícula</label>
@@ -141,6 +150,9 @@ export default function CreateFormMedic({ medico, setShowModal, onSuccess }: Pro
                            {...register("matricula", { required: true })}
                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
                         />
+                        {errors.matricula?.message && (
+                           <p className="text-red-500">{String(errors.matricula.message)}</p>
+                        )}
                      </div>
                      <div>
                         <label className="block text-xs font-semibold text-slate-500 uppercase mb-1 ml-1">CUIL/CUIT</label>
@@ -149,6 +161,9 @@ export default function CreateFormMedic({ medico, setShowModal, onSuccess }: Pro
                            {...register("cuil_cuit", { required: true })}
                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
                         />
+                        {errors.cuil_cuit?.message && (
+                           <p className="text-red-500">{String(errors.cuil_cuit.message)}</p>
+                        )}
                      </div>
                   </div>
                )}
@@ -176,35 +191,35 @@ export default function CreateFormMedic({ medico, setShowModal, onSuccess }: Pro
                   {watchSelectedIds.length > 0 && <h3 className="text-sm font-bold text-teal-600 uppercase tracking-wider">Configuración de Guardias</h3>}
                   <div className="max-h-50 overflow-auto">
 
-                  {watchSelectedIds.map((id: string) => {
-                     const nombre = especialidades.find((e: any) => String(e.id_especialidad) === id)?.nombre;
-                     return (
-                        <div key={id} className="p-4 border border-slate-200 rounded-2xl bg-white shadow-sm flex items-center justify-between">
-                           <span className="font-semibold text-slate-700">{nombre}</span>
+                     {watchSelectedIds.map((id: string) => {
+                        const nombre = especialidades.find((e: any) => String(e.id_especialidad) === id)?.nombre;
+                        return (
+                           <div key={id} className="p-4 border border-slate-200 rounded-2xl bg-white shadow-sm flex items-center justify-between">
+                              <span className="font-semibold text-slate-700">{nombre}</span>
 
-                           <div className="flex items-center gap-6">
-                              <label className="flex items-center gap-2 text-sm text-slate-600">
-                                 <input
-                                    type="checkbox"
-                                    {...register(`config.${id}.guardia`)}
-                                    className="rounded text-teal-500"
+                              <div className="flex items-center gap-6">
+                                 <label className="flex items-center gap-2 text-sm text-slate-600">
+                                    <input
+                                       type="checkbox"
+                                       {...register(`config.${id}.guardia`)}
+                                       className="rounded text-teal-500"
                                     />
-                                 ¿Guardia?
-                              </label>
+                                    ¿Guardia?
+                                 </label>
 
-                              <div className="flex items-center gap-2">
-                                 <span className="text-xs text-slate-400">Máx:</span>
-                                 <input
-                                    type="number"
-                                    {...register(`config.${id}.max_guardia`)}
-                                    className="w-16 p-1 border-b border-slate-300 focus:border-teal-500 outline-none text-center text-sm"
-                                    placeholder="0"
-                                 />
+                                 <div className="flex items-center gap-2">
+                                    <span className="text-xs text-slate-400">Máx:</span>
+                                    <input
+                                       type="number"
+                                       {...register(`config.${id}.max_guardia`)}
+                                       className="w-16 p-1 border-b border-slate-300 focus:border-teal-500 outline-none text-center text-sm"
+                                       placeholder="0"
+                                    />
+                                 </div>
                               </div>
                            </div>
-                        </div>
-                     );
-                  })}
+                        );
+                     })}
                   </div>
                </div>
 
@@ -216,6 +231,9 @@ export default function CreateFormMedic({ medico, setShowModal, onSuccess }: Pro
                      placeholder="+54 9..."
                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
                   />
+                  {errors.telefono?.message && (
+                     <p className="text-red-500">{String(errors.telefono.message)}</p>
+                  )}
                </div>
 
                <div className="flex gap-3 pt-6">
