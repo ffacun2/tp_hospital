@@ -92,3 +92,14 @@ export const getInternacionesByMedico = async (req: Request, res: Response) => {
       res.status(500).json({ error: "Error fetching internaciones" });
    }
 };
+
+export const getInternacionesByDni = async (req: Request, res: Response) => {
+   const { dni } = req.params;
+   try {
+      const internaciones = await internacionService.getInternacionesByDni(Number(dni));
+      res.json(internaciones);
+   } catch (error) {
+      console.log(error)
+      res.status(500).json({ error: "Error fetching internaciones" });
+   }
+};

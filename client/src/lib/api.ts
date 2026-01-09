@@ -72,7 +72,7 @@ export const internacionesAPI = {
    delete: (id: number) => fetchAPI(`/internaciones/${id}`, { method: "DELETE" }),
    getDetallesById: (id: number) => fetchAPI(`/internaciones/${id}/seguimiento`),
    getIntenacionesByMedico: (id: number) => fetchAPI(`/internaciones/medico/${id}`),
-   getIntenacionesByDni: (dni: number) => fetchAPI(`/internaciones/dni/${dni}`)
+   getIntenacionesByDni: (dni: number) => fetchAPI(`/internaciones/paciente/${dni}`)
 }
 
 // Guardias
