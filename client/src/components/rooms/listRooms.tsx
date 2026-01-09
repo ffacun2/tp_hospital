@@ -6,6 +6,7 @@ import CardRoom from "./cardRoom";
 import { habitacionesAPI } from "../../lib/api";
 import CreateFormRoom from "./formRoom";
 import Error from "../ui/error";
+import { Link } from "react-router-dom";
 
 
 export default function ListRooms() {
@@ -97,7 +98,16 @@ export default function ListRooms() {
                <LoadingSpinner message="Cargando habitaciones..." />
             ) : (
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {filteredHabitaciones.map((habitacion) => (<CardRoom habitacion={habitacion} handleEdit={handleEdit} handleDelete={handleDelete} />))}
+                  {filteredHabitaciones.map((habitacion) => (
+                     <Link to={`/camas/${habitacion.num_habitacion}`}>
+                        <CardRoom
+                           key={habitacion.num_habitacion}
+                           habitacion={habitacion}
+                           handleEdit={handleEdit}
+                           handleDelete={handleDelete}
+                        />
+                     </Link>
+                  ))}
                </div>
             )
          }

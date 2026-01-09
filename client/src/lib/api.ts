@@ -63,6 +63,13 @@ export const habitacionesAPI = {
    delete: (id: number) => fetchAPI(`/habitaciones/${id}`, { method: "DELETE" }),
 }
 
+export const camasAPI = {
+   getAllByHabitacion: (num_habitacion: number) => fetchAPI(`/camas/${num_habitacion}`),
+   create: (data: any) => fetchAPI("/camas", { method: "POST", body: JSON.stringify(data) }),
+   update: (id: number, data: any) => fetchAPI(`/camas/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+   delete: (id: number) => fetchAPI(`/camas/${id}`, { method: "DELETE" }),
+}
+
 // Internaciones
 export const internacionesAPI = {
    getAll: () => fetchAPI("/internaciones"),

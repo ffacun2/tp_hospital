@@ -14,6 +14,7 @@ import InternacionDetalle from "./pages/InternacionDetalle"
 import MedicoDetalle from "./pages/MedicoDetalle"
 import PacienteDetalle from "./pages/PacienteDetalle"
 import Auditoria from "./pages/Auditoria"
+import HabitacionDetails from "./pages/HabitacionDetails"
 
 
 
@@ -73,6 +74,7 @@ function Layout() {
                <Route path="/especialidades" element={<Especialidades />} />
                <Route path="/sectores" element={<Sectores />} />
                <Route path="/habitaciones" element={<Habitaciones />} />
+               <Route path="/camas/:num_habitacion" element={<HabitacionDetails />} />
                <Route path="/internaciones" element={<Internaciones />} />
                <Route path="/internaciones/:id/seguimiento" element={<InternacionDetalle />} />
                <Route path="/guardias" element={<Guardias />} />
