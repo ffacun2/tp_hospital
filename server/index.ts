@@ -1,6 +1,6 @@
 import express from "express";
 import type { Request, Response } from "express";
-import {pool} from "./config/db.ts";
+import { pool } from "./config/db.ts";
 import cors from "cors";
 import { loadEnvFile } from "node:process";
 import sectorRoutes from "./routes/sectorRoutes.ts";
@@ -11,6 +11,7 @@ import internacionRoutes from "./routes/internacionRoutes.ts";
 import enumRoutes from "./routes/enumRoutes.ts";
 import reportRoutes from "./routes/reportRoutes.ts";
 import especialidadRoutes from "./routes/especialidadRoutes.ts";
+import roomRoutes from "./routes/roomRoutes.ts";
 
 loadEnvFile("./.env");
 
@@ -41,12 +42,11 @@ app.use((err: any, _req: Request, res: Response, _next: any) => {
 
 app.use('/pacientes', pacienteRoutes)
 
-
 // ==================== MEDICOS ====================
 
 app.use('/medicos', medicoRoutes)
 
-// ==================== MEDICOS ====================
+// ==================== ESPECIALIDADES ====================
 
 app.use('/especialidades', especialidadRoutes)
 
@@ -70,24 +70,9 @@ app.use('/config/enums', enumRoutes);
 
 app.use('/reportes', reportRoutes);
 
-// ==================== INTERNACIONES ====================
+// ==================== CAMAS ====================
 
-// GET internment followup/comments
-app.get(
-   "/internaciones/:id/seguimiento",
-   async (req: Request, res: Response) => {
-      const id = Number(req.params.id);
-      try {
-         const result = await pool.query(
-            "SELECT * FROM sp_comentarios_internacion($1)",
-            [id]
-         );
-         res.json(result.rows);
-      } catch (err: any) {
-         res.status(500).json({ error: err.message });
-      }
-   }
-);
+app.use('/camas', roomRoutes)
 
 // ==================== GUARDIAS ====================
 
@@ -177,29 +162,6 @@ app.delete("/guardias/:id", async (req: Request, res: Response) => {
    }
 });
 
-// GET audit report
-app.get("/reportes/auditoria", async (_req: Request, res: Response) => {
-   try {
-      const result = await pool.query(`
-         SELECT 
-         id_auditoria,
-         accion,
-          usuario,
-          to_char(fecha_auditoria, 'DD/MM/YYYY HH24:MI:SS') as fecha,
-          id_guardia,
-          t_guardia,
-          matricula,
-          nombre_medico,
-          apellido_medico,
-          especialidad
-        FROM aud_asignacion_guardia
-        ORDER BY fecha_auditoria DESC
-      `);
-      res.json(result.rows);
-   } catch (err: any) {
-      res.status(500).json({ error: err.message });
-   }
-});
 
 
 
