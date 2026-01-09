@@ -6,6 +6,7 @@ import { Plus, Search, AlertCircle } from "lucide-react"
 import CreateFormPacient from "./formPaciente"
 import LoadingSpinner from "../ui/loadingSpinner"
 import { usePacientes } from "../../hooks/usePaciente"
+import { Link } from "react-router-dom"
 
 export default function ListPaciente() {
    const { pacientes, isLoading, isError, deletePaciente } = usePacientes();
@@ -72,12 +73,14 @@ export default function ListPaciente() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                {filteredPacientes.length > 0 ? (
                   filteredPacientes.map((paciente) => (
-                     <CardPacient
-                        key={paciente.dni}
-                        paciente={paciente}
-                        handleEdit={handleEdit}
-                        handleDelete={handleDeleteClick}
-                     />
+                     <Link to={`/pacientes/${paciente.dni}`}>
+                        <CardPacient
+                           key={paciente.dni}
+                           paciente={paciente}
+                           handleEdit={handleEdit}
+                           handleDelete={handleDeleteClick}
+                        />
+                     </Link>
                   ))
                ) : (
                   <p className="col-span-full text-center text-slate-500 py-10">

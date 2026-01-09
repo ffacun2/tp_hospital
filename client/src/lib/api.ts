@@ -71,7 +71,8 @@ export const internacionesAPI = {
    update: (id: number, data: any) => fetchAPI(`/internaciones/${id}`, { method: "PUT", body: JSON.stringify(data) }),
    delete: (id: number) => fetchAPI(`/internaciones/${id}`, { method: "DELETE" }),
    getDetallesById: (id: number) => fetchAPI(`/internaciones/${id}/seguimiento`),
-   getIntenacionesByMedico: (id: number) => fetchAPI(`/internaciones/medico/${id}`)
+   getIntenacionesByMedico: (id: number) => fetchAPI(`/internaciones/medico/${id}`),
+   getIntenacionesByDni: (dni: number) => fetchAPI(`/internaciones/dni/${dni}`)
 }
 
 // Guardias
