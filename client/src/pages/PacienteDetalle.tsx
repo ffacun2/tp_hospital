@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Calendar, MapPin, Phone, User, Activity, History } from "lucide-react";
 import LoadingSpinner from "../components/ui/loadingSpinner";
 import { formatToHTMLDate } from "../utils/formatDate"; // Tu utilidad de formato
@@ -102,19 +102,19 @@ export default function PacienteDetalle() {
                      </div>
                   ) : (
                      <div className="relative border-l-2 border-slate-100 ml-3 space-y-8">
-                        {internaciones.map((internacion: any) => (
-                           <div key={internacion.id_internacion} className="relative pl-8">
+                        {internaciones.map((internacion: Internacion) => (
+                           <Link to={`/internaciones/${internacion.id_internacion}/seguimiento`} key={internacion.id_internacion} className="relative pl-8">
                               {/* Puntito de la línea de tiempo */}
                               <div className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-4 border-white shadow-sm" />
 
                               <div className="bg-slate-50 rounded-xl p-4 hover:bg-slate-100 transition-colors cursor-pointer border border-transparent hover:border-blue-200">
                                  <div className="flex justify-between items-start mb-2">
                                     <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">
-                                       Ingreso: {formatToHTMLDate(internacion.fecha_ingreso)}
+                                       Ingreso: {formatToHTMLDate(internacion.fecha_inicio)}
                                     </span>
-                                    {internacion.fecha_egreso ? (
+                                    {internacion.fecha_fin ? (
                                        <span className="text-xs font-medium text-slate-500">
-                                          Alta: {formatToHTMLDate(internacion.fecha_egreso)}
+                                          Alta: {formatToHTMLDate(internacion.fecha_fin)}
                                        </span>
                                     ) : (
                                        <span className="px-2 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded-full uppercase">
@@ -122,11 +122,10 @@ export default function PacienteDetalle() {
                                        </span>
                                     )}
                                  </div>
-                                 <h3 className="font-bold text-slate-800">Motivo: {internacion.motivo}</h3>
-                                 <p className="text-sm text-slate-600 mt-1">Cama: {internacion.num_cama} - Sector {internacion.nombre_sector}</p>
-                                 <p className="text-xs text-slate-400 mt-3 italic">Médico a cargo: {internacion.medico_nombre}</p>
+                                 <p className="text-sm text-slate-600 mt-1">Cama: {internacion.cama.id_cama} - Sector {internacion.cama.habitacion.sector?.tipo}</p>
+                                 <p className="text-xs text-slate-400 mt-3 italic">Médico a cargo: {internacion.medico.apellido}, {internacion.medico.nombre}</p>
                               </div>
-                           </div>
+                           </Link>
                         ))}
                      </div>
                   )}
