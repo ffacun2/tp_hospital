@@ -1,7 +1,6 @@
-import { AlertCircle, Plus, Search } from "lucide-react"
-import { useEffect, useMemo, useState } from "react"
-import type { Internacion, Medico, Paciente } from "../../types/types"
-import { medicosAPI, pacientesAPI } from "../../lib/api"
+import { Plus, Search } from "lucide-react"
+import { useMemo, useState } from "react"
+import type { Internacion, } from "../../types/types"
 import LoadingSpinner from "../ui/loadingSpinner"
 import CardInternacion from "./cardInternacion"
 import FormInternacion from "./formInternacion"
@@ -9,6 +8,7 @@ import { Link } from "react-router-dom"
 import { useInternaciones } from "../../hooks/useInternacion"
 import { useMedicos } from "../../hooks/useMedico"
 import { usePacientes } from "../../hooks/usePaciente"
+import Error from "../ui/error"
 
 
 export default function ListInternacion() {
@@ -40,11 +40,7 @@ export default function ListInternacion() {
       }
    }
 
-   if (isError) return (
-      <div className="flex items-center gap-2 text-red-500 p-4">
-         <AlertCircle className="w-5 h-5" /> Error al conectar con el servidor.
-      </div>
-   );
+   if (isError) return <Error message="Error al conectar con el servidor." />
 
    return (
       <>
@@ -72,7 +68,7 @@ export default function ListInternacion() {
 
          {
             isLoading ? (
-               <LoadingSpinner />
+               <LoadingSpinner message="Cargando internaciones..." />
             ) : (
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {filteredInternaciones.map((internacion) => (

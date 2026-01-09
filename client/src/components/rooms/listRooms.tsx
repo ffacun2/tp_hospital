@@ -5,6 +5,7 @@ import LoadingSpinner from "../ui/loadingSpinner";
 import CardRoom from "./cardRoom";
 import { habitacionesAPI } from "../../lib/api";
 import CreateFormRoom from "./formRoom";
+import Error from "../ui/error";
 
 
 export default function ListRooms() {
@@ -14,6 +15,7 @@ export default function ListRooms() {
    const [showModal, setShowModal] = useState(false)
    const [editingRoom, setEditingRoom] = useState<Habitacion | undefined>(undefined)
    const [loading, setLoading] = useState(false)
+   const [error, setError] = useState(false)
 
 
    useEffect(() => {
@@ -39,7 +41,7 @@ export default function ListRooms() {
          setHabitaciones(habitacionesData)
       }
       catch (error: any) {
-         alert("Error al cargar datos: " + error.message)
+         setError(true)
       }
       finally {
          setLoading(false)
@@ -62,6 +64,8 @@ export default function ListRooms() {
          }
       }
    }
+
+   if (error) return <Error message="Error al cargar las habitaciones" />
 
 
    return (
@@ -90,7 +94,7 @@ export default function ListRooms() {
 
          {
             loading ? (
-               <LoadingSpinner />
+               <LoadingSpinner message="Cargando habitaciones..." />
             ) : (
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {filteredHabitaciones.map((habitacion) => (<CardRoom habitacion={habitacion} handleEdit={handleEdit} handleDelete={handleDelete} />))}

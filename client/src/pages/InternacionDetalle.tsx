@@ -5,12 +5,15 @@ import { internacionesAPI } from "../lib/api";
 import BackButton from "../components/ui/backButton";
 import FormObservacion from "../components/internacion/formObservacion";
 import { formatToHTMLDate, formatToHTMLTime } from "../utils/formatDate";
+import Error from "../components/ui/error";
+import LoadingSpinner from "../components/ui/loadingSpinner";
 
 export default function InternacionDetalle() {
    const { id } = useParams<{ id: string }>();
    const [internacion, setInternacion] = useState<Internacion | null>(null);
    const [loading, setLoading] = useState(true);
    const [ShowForm, setShowForm] = useState(false);
+   const [error, setError] = useState(false);
 
    const loadInternacion = async () => {
       try {
@@ -19,6 +22,7 @@ export default function InternacionDetalle() {
          setInternacion(data);
       } catch (error) {
          console.error("Error loading internacion:", error);
+         setError(true);
       } finally {
          setLoading(false);
       }
@@ -26,8 +30,9 @@ export default function InternacionDetalle() {
 
    useEffect(() => { loadInternacion(); }, [id]);
 
-   if (loading) return <div className="p-8">Cargando detalles de internación...</div>;
-   if (!internacion) return <div className="p-8">No se encontró la internación.</div>;
+   if (loading) return <LoadingSpinner message="Cargando datos..." />;
+   if (!internacion) return <Error message="No se encontró la internación." />;
+   if (error) return <Error message="Error al cargar la internación." />;
 
    return (
       <>

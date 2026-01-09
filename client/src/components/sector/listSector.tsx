@@ -1,39 +1,33 @@
 import { useEffect, useState } from "react"
 import type { Sector } from "../../types/types"
 import { sectoresAPI } from "../../lib/api"
-import { Plus, Search } from "lucide-react"
+import { Plus } from "lucide-react"
 import LoadingSpinner from "../ui/loadingSpinner"
 import CardSector from "./cardSector"
 import CreateFormSector from "./formSector"
+import Error from "../ui/error"
 
 
 export default function ListSector() {
    const [sectores, setSectores] = useState<Sector[]>([])
-   const [filteredSectores, setFilteredSectores] = useState<Sector[]>([])
-   const [search, setSearch] = useState("")
    const [showModal, setShowModal] = useState(false)
    const [editingSector, setEditingSector] = useState<Sector | undefined>(undefined)
    const [loading, setLoading] = useState(false)
+   const [error, setError] = useState(false)
 
    useEffect(() => {
       loadSectores()
    }, [])
-
-   useEffect(() => {
-      const filtered = sectores.filter(
-         (s) => s.tipo.toLowerCase().includes(search.toLowerCase()))
-      setFilteredSectores(filtered)
-   }, [search, sectores])
 
    const loadSectores = async () => {
       try {
          setLoading(true)
          const data = await sectoresAPI.getAll()
          setSectores(data)
-         setFilteredSectores(data)
       }
       catch (error: any) {
          alert("Error al cargar sectores: " + error.message)
+         setError(true)
       }
       finally {
          setLoading(false)
@@ -56,6 +50,8 @@ export default function ListSector() {
       }
    }
 
+   if (error) return <Error message="Error al cargar sectores" />
+
    return (
       <>
          <div className="mb-6">
@@ -71,10 +67,10 @@ export default function ListSector() {
          </div>
 
          {loading ? (
-            <LoadingSpinner />
+            <LoadingSpinner message="Cargando sectores..." />
          ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-               {filteredSectores.map((sector) => (<CardSector sector={sector} handleEdit={handleEdit} handleDelete={handleDelete} />))}
+               {sectores.map((sector) => (<CardSector sector={sector} handleEdit={handleEdit} handleDelete={handleDelete} />))}
             </div>
          )}
 

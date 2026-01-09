@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react"
 import type { Medico } from "../../types/types"
-import { AlertCircle, Plus, Search } from "lucide-react"
+import { Plus, Search } from "lucide-react"
 import CreateFormMedic from "./formMedico"
 import LoadingSpinner from "../ui/loadingSpinner"
 import CardMedic from "./cardMedico"
 import { Link } from "react-router-dom"
 import { useMedicos } from "../../hooks/useMedico"
+import Error from "../ui/error"
 
 
 export default function ListMedic() {
@@ -33,11 +34,7 @@ export default function ListMedic() {
       }
    }
 
-   if (isError) return (
-      <div className="flex items-center gap-2 text-red-500 p-4">
-         <AlertCircle className="w-5 h-5" /> Error al conectar con el servidor.
-      </div>
-   );
+   if (isError) return <Error message="Error al conectar con el servidor." />
 
    return (
       <>
@@ -65,7 +62,7 @@ export default function ListMedic() {
 
          {isLoading ? (
             <div className="flex justify-center py-20">
-               <LoadingSpinner />
+               <LoadingSpinner message="Cargando médicos..." />
             </div>
          ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

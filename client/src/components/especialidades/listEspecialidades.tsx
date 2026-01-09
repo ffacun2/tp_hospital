@@ -5,6 +5,7 @@ import { Plus } from "lucide-react"
 import LoadingSpinner from "../ui/loadingSpinner"
 import CardEspecialidad from "./cardEspecialidad"
 import CreateFormEspecialidad from "./formEspecialidades"
+import Error from "../ui/error"
 
 
 export default function ListEspecialidades() {
@@ -12,6 +13,7 @@ export default function ListEspecialidades() {
    const [showModal, setShowModal] = useState(false)
    const [editingEspecialidad, setEditingEspecialidad] = useState<Especialidad | undefined>(undefined)
    const [loading, setLoading] = useState(false)
+   const [error, setError] = useState(false)
 
    useEffect(() => {
       loadEspecialidades()
@@ -25,6 +27,7 @@ export default function ListEspecialidades() {
       }
       catch (error: any) {
          alert("Error al cargar especialidades: " + error.message)
+         setError(true)
       }
       finally {
          setLoading(false)
@@ -47,6 +50,8 @@ export default function ListEspecialidades() {
       }
    }
 
+   if (error) return <Error message="Error al cargar especialidades" />
+
    return (
       <>
          <div className="mb-6">
@@ -64,7 +69,7 @@ export default function ListEspecialidades() {
          </div>
 
          {loading ? (
-            <LoadingSpinner />
+            <LoadingSpinner message="Cargando especialidades..." />
          ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                {especialidades.map((especialidad) => (<CardEspecialidad especialidad={especialidad} handleEdit={handleEdit} handleDelete={handleDelete} />))}

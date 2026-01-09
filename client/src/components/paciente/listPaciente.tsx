@@ -2,11 +2,12 @@
 import { useState, useMemo } from "react"
 import type { Paciente } from "../../types/types"
 import CardPacient from "./cardPaciente"
-import { Plus, Search, AlertCircle } from "lucide-react"
+import { Plus, Search } from "lucide-react"
 import CreateFormPacient from "./formPaciente"
 import LoadingSpinner from "../ui/loadingSpinner"
 import { usePacientes } from "../../hooks/usePaciente"
 import { Link } from "react-router-dom"
+import Error from "../ui/error"
 
 export default function ListPaciente() {
    const { pacientes, isLoading, isError, deletePaciente } = usePacientes();
@@ -34,11 +35,7 @@ export default function ListPaciente() {
       }
    };
 
-   if (isError) return (
-      <div className="flex items-center gap-2 text-red-500 p-4">
-         <AlertCircle /> Error al conectar con el servidor.
-      </div>
-   );
+   if (isError) return <Error message="Error al conectar con el servidor." />
 
    return (
       <div className="container mx-auto p-4">
@@ -67,7 +64,7 @@ export default function ListPaciente() {
 
          {isLoading ? (
             <div className="flex justify-center py-20">
-               <LoadingSpinner />
+               <LoadingSpinner message="Cargando pacientes..." />
             </div>
          ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

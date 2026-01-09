@@ -4,13 +4,15 @@ import { Stethoscope, Contact, Activity, ClipboardList, ChevronRight } from 'luc
 import type { Internacion, Medico } from '../types/types';
 import { internacionesAPI, medicosAPI } from '../lib/api';
 import BackButton from '../components/ui/backButton';
+import LoadingSpinner from '../components/ui/loadingSpinner';
+import Error from '../components/ui/error';
 
 export default function MedicoDetalles() {
    const { matricula } = useParams<{ matricula: string }>();
    const [medico, setMedico] = useState<Medico | null>(null);
    const [loading, setLoading] = useState(true);
    const [internaciones, setInternaciones] = useState<Internacion[] | null>(null);
-
+   const [error, setError] = useState(false);
 
    useEffect(() => {
       const fetchDetalles = async () => {
@@ -22,6 +24,7 @@ export default function MedicoDetalles() {
             setInternaciones(inter);
          } catch (error) {
             console.error("Error cargando médico:", error);
+            setError(true);
          } finally {
             setLoading(false);
          }
@@ -30,8 +33,9 @@ export default function MedicoDetalles() {
    }, [matricula]);
 
 
-   if (loading) return <div className="p-10">Cargando perfil del profesional...</div>;
-   if (!medico) return <div className="p-10">Profesional no encontrado.</div>;
+   if (loading) return <LoadingSpinner message="Cargando datos..." />;
+   if (!medico) return <Error message="Profesional no encontrado." />;
+   if (error) return <Error message="Error al cargar el médico." />;
 
    return (
       <div className="p-8 bg-gray-50 min-h-screen">

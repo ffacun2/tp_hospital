@@ -6,12 +6,15 @@ import { useEffect, useState } from "react";
 import type { Internacion, Paciente } from "../types/types";
 import BackButton from "../components/ui/backButton";
 import { internacionesAPI, pacientesAPI } from "../lib/api";
+import Error from "../components/ui/error";
 
 export default function PacienteDetalle() {
    const { dni } = useParams<{ dni: string }>();
    const [paciente, setPaciente] = useState<Paciente | null>(null);
    const [loading, setLoading] = useState(true);
    const [internaciones, setInternaciones] = useState<Internacion[]>([]);
+   const [error, setError] = useState(false);
+
 
    useEffect(() => {
       const fetchPaciente = async () => {
@@ -21,9 +24,10 @@ export default function PacienteDetalle() {
             const inter = await internacionesAPI.getIntenacionesByDni(Number(dni));
             setPaciente(data);
             setInternaciones(inter);
-            setLoading(false);
          } catch (error) {
+            setError(true);
             console.error('Error al cargar el paciente:', error);
+         } finally {
             setLoading(false);
          }
       };
@@ -31,8 +35,9 @@ export default function PacienteDetalle() {
       fetchPaciente();
    }, [dni]);
 
-   if (loading) return <LoadingSpinner />;
-   if (!paciente) return <div className="p-10">Profesional no encontrado.</div>;
+   if (loading) return <LoadingSpinner message="Cargando datos..." />;
+   if (!paciente) return <Error message="Paciente no encontrado." />;
+   if (error) return <Error message="Error al cargar el paciente." />;
 
    return (
       <div className="container mx-auto p-6 max-w-5xl">

@@ -46,16 +46,7 @@ export default function CardMedic({ medico, handleEdit, handleDelete }: PropCard
          </div>
          <div className="space-y-2 text-sm">
             <p className="text-slate-600">
-               <span className="font-medium">DNI:</span> {medico.dni}
-            </p>
-            <p className="text-slate-600">
                <span className="font-medium">Matrícula:</span> {medico.matricula}
-            </p>
-            <p className="text-slate-600">
-               <span className="font-medium">CUIL/CUIT:</span> {medico.cuil_cuit}
-            </p>
-            <p className="text-slate-600">
-               <span className="font-medium">Teléfono:</span> {medico.telefono}
             </p>
          </div>
       </div>
