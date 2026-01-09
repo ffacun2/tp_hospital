@@ -170,10 +170,12 @@ export const detalleInternacion = async (id: number) => {
        (SELECT JSON_AGG(
            JSON_BUILD_OBJECT(
                'nro_comentario', cr.nro_comentario,
-               'texto', cr.texto
+               'texto', cr.texto,
+               'fecha', r.fecha
            ) ORDER BY nro_comentario 
        )
        FROM COMENTARIO_RECORRIDO cr
+       JOIN RECORRIDO r ON cr.id_recorrido = r.id_recorrido
        WHERE cr.id_internacion = i.id_internacion), 
        '[]'
    ) AS comentarios_recorrido

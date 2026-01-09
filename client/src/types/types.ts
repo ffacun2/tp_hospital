@@ -81,4 +81,6 @@ export interface ReporteCamasDetalle {
 export interface ComentarioRecorrido {
    nro_comentario: number
    texto: string
+   internacion: Internacion
+   fecha: string
 }
