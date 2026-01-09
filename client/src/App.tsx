@@ -13,6 +13,7 @@ import NavItem from "./components/ui/navItem"
 import InternacionDetalle from "./pages/InternacionDetalle"
 import MedicoDetalle from "./pages/MedicoDetalle"
 import PacienteDetalle from "./pages/PacienteDetalle"
+import Auditoria from "./pages/Auditoria"
 
 
 
@@ -76,8 +77,7 @@ function Layout() {
                <Route path="/internaciones/:id/seguimiento" element={<InternacionDetalle />} />
                <Route path="/guardias" element={<Guardias />} />
                <Route path="/camas_disponibles" element={<InformeDisponibilidad />} />
-               <Route path="/auditoria_guardia" element={<div className="p-6">Reportes - En construcción</div>} />
-
+               <Route path="/auditoria_guardia" element={<Auditoria />} />
             </Routes>
          </main>
       </div>

@@ -101,4 +101,5 @@ export const especialidadesAPI = {
 export const reportesAPI = {
    getCamasDisponiblesResumen: () => fetchAPI("/reportes/camas-disponibles-sector"),
    getCamasDisponiblesDetalle: () => fetchAPI("/reportes/camas-disponibles-detalle"),
+   getAuditoriaGuardia: () => fetchAPI("/reportes/auditoria-guardia"),
 }
