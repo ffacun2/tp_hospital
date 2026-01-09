@@ -1,4 +1,4 @@
-import { Sector } from "./sector.type.ts"
+import type { Sector } from "./sector.type.ts"
 
 export interface Habitacion {
    num_habitacion: number

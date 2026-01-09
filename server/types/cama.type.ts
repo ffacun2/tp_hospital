@@ -1,8 +1,10 @@
-import { Habitacion } from "./habitacion.type.ts"
+import type { Habitacion } from "./habitacion.type.ts"
 
 export interface Cama {
    id_cama: number
-   nro_cama: number
+   num_cama: number
    estado: string
-   habitacion: Habitacion
+   habitacion: Partial<Habitacion>
 }
+
+export type NewCama = Partial<Cama>
