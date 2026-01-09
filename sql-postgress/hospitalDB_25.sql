@@ -2,8 +2,6 @@ drop type if exists SEXO cascade;
 
 drop type if exists ORIENTACION cascade;
 
-drop type if exists TIPO_SECTOR cascade;
-
 drop type if exists TIPO_GUARDIA cascade;
 
 drop type if exists ESTADO_CAMA cascade;
@@ -13,20 +11,14 @@ drop type if exists TURNO cascade;
 /*TIPOS*/
 create type SEXO as enum (
 'MASCULINO',
-'FEMENINO');
+'FEMENINO',
+'OTRO');
 
 create type ORIENTACION as enum (
 'NORTE',
 'SUR',
 'ESTE',
 'OESTE');
-
-create type TIPO_SECTOR as enum (
-'QUIRURGICO',
-'TERAPIA_INTENSIVA',
-'PEDIATRIA',
-'MATERNIDAD',
-'NEONATOLOGIA');
 
 create type TIPO_GUARDIA as enum (
 'MATUTINO',
@@ -80,7 +72,7 @@ create table medico (
 
 create table sector (
 	id_sector SERIAL,
-  tipo TIPO_SECTOR unique not null,
+  tipo VARCHAR(50) unique not null,
   
   primary key (id_sector)
 );
