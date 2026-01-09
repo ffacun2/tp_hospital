@@ -129,11 +129,10 @@ export default function HabitacionDetails() {
                                  <div className={`p-2 rounded-lg ${cama.estado ? 'bg-amber-100 text-amber-600' : 'bg-blue-100 text-blue-600'}`}>
                                     <Bed size={24} />
                                  </div>
-                                 {cama.estado !== "LIBRE" && (
+                                 {cama.estado === "LIBRE" && (
                                     <button
                                        onClick={() => {
-                                          setSelectedCama(cama);
-                                          setIsConfirmDeleteOpen(true);
+                                          handleDeleteCama(cama.num_cama);
                                        }}
                                        className="text-slate-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
                                     >
@@ -173,18 +172,6 @@ export default function HabitacionDetails() {
                   onSuccess={() => loadData()}
                />
             )}
-
-            <ConfirmModal
-               isOpen={isConfirmDeleteOpen}
-               onClose={() => setIsConfirmDeleteOpen(false)}
-               onConfirm={
-                  () => handleDeleteCama(selectedCama?.nro_cama)
-               }
-               variant="danger"
-               title="Eliminar Cama"
-               message={`¿Estás seguro de que deseas eliminar la Cama ${selectedCama?.nro_cama}? Esta acción no se puede deshacer.`}
-               isLoading={loading}
-            />
          </div>
       </div>
    );

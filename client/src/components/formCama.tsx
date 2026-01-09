@@ -18,9 +18,9 @@ export default function CreateFormRoom({ nro_habitacion, setShowModal, onSuccess
    const onSubmit = async (formData: any) => {
       try {
          await camasAPI.create({
-            nro_cama: formData.nro_cama,
+            num_cama: formData.nro_cama,
             estado: "LIBRE",
-            habitacion: Number(nro_habitacion)
+            habitacion: { num_habitacion: Number(nro_habitacion) }
          })
          if (onSuccess) onSuccess()
          closeAndReset()
