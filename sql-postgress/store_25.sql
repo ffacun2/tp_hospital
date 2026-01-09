@@ -5,18 +5,18 @@
 -- =========================================================== --
 CREATE OR REPLACE FUNCTION sp_cantidad_camas_libres_por_sector()
 RETURNS TABLE(
-    sector TIPO_SECTOR,
+    sector VARCHAR(50),
     cantidad_disponible BIGINT
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT s.tipo, COUNT(c.num_cama)
+    SELECT s.tipo::VARCHAR(50), COUNT(c.num_cama)
     FROM cama c
     JOIN habitacion h ON h.num_habitacion = c.num_habitacion
     JOIN sector s ON s.id_sector = h.id_sector
     WHERE c.estado = 'LIBRE'
     GROUP BY s.tipo
-	ORDER BY cantidad_disponible DESC;
+	ORDER BY 2 DESC;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -26,9 +26,9 @@ $$ LANGUAGE plpgsql;
 -- =========================================================== --
 -- LISTADO DE DETALLES DE LAS CAMAS DISPONIBLES POR SECTOR     --
 -- =========================================================== --
-CREATE OR REPLACE FUNCTION sp_detalle_camas_disponibles(sector TIPO_SECTOR DEFAULT NULL)
+CREATE OR REPLACE FUNCTION sp_detalle_camas_disponibles(sector_buscado VARCHAR(50) DEFAULT NULL)
 RETURNS TABLE(
-    nombre_sector TEXT,
+    nombre_sector VARCHAR(50),
     piso INT,
     num_habitacion INT,
     num_cama INT,
@@ -36,12 +36,12 @@ RETURNS TABLE(
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT s.tipo::TEXT, h.piso, c.num_habitacion, c.num_cama, h.orientacion::TEXT
+    SELECT s.tipo::VARCHAR(50), h.piso, c.num_habitacion, c.num_cama, h.orientacion::TEXT
     FROM cama c
     JOIN habitacion h ON h.num_habitacion = c.num_habitacion
     JOIN sector s ON s.id_sector = h.id_sector
     WHERE c.estado = 'LIBRE'
-      AND (sector IS NULL OR s.tipo = sector)
+      AND (sector_buscado IS NULL OR s.tipo = sector_buscado)
     ORDER BY s.tipo, h.piso, c.num_habitacion;
 END;
 $$ LANGUAGE plpgsql;
