@@ -41,11 +41,13 @@ export default function InternacionDetalle() {
 
                {/* Fila superior: Paciente y Médico */}
                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm">
-                     <h2 className="font-bold text-teal-600 mb-2 uppercase text-sm">Paciente</h2>
-                     <p className="text-lg font-semibold">{internacion.paciente.nombre} {internacion.paciente.apellido}</p>
-                     <p className="text-slate-500 text-sm">DNI: {internacion.paciente.dni}</p>
-                  </div>
+                  <Link to={`/pacientes/${internacion.paciente.dni}`}>
+                     <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm">
+                        <h2 className="font-bold text-teal-600 mb-2 uppercase text-sm">Paciente</h2>
+                        <p className="text-lg font-semibold">{internacion.paciente.nombre} {internacion.paciente.apellido}</p>
+                        <p className="text-slate-500 text-sm">DNI: {internacion.paciente.dni}</p>
+                     </div>
+                  </Link>
 
                   <Link to={`/medicos/${internacion.medico.matricula}`}>
                      <div className="bg-white p-6 rounded-xl border border-slate-300 shadow-sm">
