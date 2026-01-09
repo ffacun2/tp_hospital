@@ -11,7 +11,7 @@ import internacionRoutes from "./routes/internacionRoutes.ts";
 import enumRoutes from "./routes/enumRoutes.ts";
 import reportRoutes from "./routes/reportRoutes.ts";
 import especialidadRoutes from "./routes/especialidadRoutes.ts";
-import roomRoutes from "./routes/roomRoutes.ts";
+import roomRoutes from "./routes/bedRoutes.ts";
 
 loadEnvFile("./.env");
 

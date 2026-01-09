@@ -1,5 +1,5 @@
-import { Request, Response } from "express";
-import * as roomService from "../services/roomService";
+import type { Request, Response } from "express";
+import * as roomService from "../services/bedService.ts";
 
 
 

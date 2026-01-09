@@ -1,4 +1,4 @@
-import { pool } from "../config/db";
+import { pool } from "../config/db.ts";
 
 export const getAllRoomsByHabitacion = async (num_habitacion: number) => {
    const query = `
