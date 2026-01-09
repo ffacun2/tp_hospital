@@ -57,6 +57,13 @@ El diseño de la base de datos sigue un modelo relacional estricto con las sigui
 | GET | /reportes/camas-disponibles-detalle | Informe de las camas disponibles |
 ## 🛠️ Instalación y Configuración
 
+- **Configuración de la Base de Datos:**
+  Para garantizar el correcto funcionamiento, la base de datos debe inicializarse siguiendo este orden de ejecucion de scripts:
+  1. `hospitalDB_25.sql`: Define las estructuras principales, relaciones y restricciones.
+  2. `store_25.sql`: Carga la logica de negocio. Debe ejecutarse antes de los triggers ya que estos dependen de la existencia de estas.
+  3. `triggers_25.sql`: Establece los disparadores automaticos para validaciones de disponibilidad de camas, estados y demas.
+  4. `datos_init_25.sql`: Carga de registros iniciales de prueba.
+
 - Configurar variables de entorno para PostgreSQL en `src/config/db.ts`.
 
    ``` .env
