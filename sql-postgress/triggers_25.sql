@@ -560,22 +560,22 @@ RETURNS TRIGGER AS $$
 DECLARE
     v_existe INT;
 BEGIN
-    -- Si la nueva internación no tiene fecha_fin, la consideramos "infinita"
-    -- Idem para las existentes que estén activas.
+    -- Validamos solapamiento usando TIMESTAMP
     SELECT 1
     INTO v_existe
     FROM internacion i
     WHERE i.dni = NEW.dni
       -- En UPDATE, ignorar la propia fila
       AND (TG_OP = 'INSERT' OR i.id_internacion <> NEW.id_internacion)
-      -- Condición de solapamiento de intervalos:
-      AND i.fecha_inicio <= COALESCE(NEW.fecha_fin, 'infinity'::date)
-      AND NEW.fecha_inicio <= COALESCE(i.fecha_fin, 'infinity'::date)
+      -- Nueva lógica de solapamiento estricto:
+      -- Un intervalo (A, B) se solapa con (C, D) si: A < D AND C < B
+      AND i.fecha_inicio < COALESCE(NEW.fecha_fin, '9999-12-31 23:59:59'::timestamp)
+      AND NEW.fecha_inicio < COALESCE(i.fecha_fin, '9999-12-31 23:59:59'::timestamp)
     LIMIT 1;
 
     IF v_existe IS NOT NULL THEN
-        RAISE EXCEPTION
-          'El paciente  % ya tiene una internación que se superpone con el rango dado', NEW.dni;
+        RAISE EXCEPTION 
+          'El paciente % ya tiene una internación activa o programada en este horario. Verifique el alta anterior.', NEW.dni;
     END IF;
 
     RETURN NEW;
