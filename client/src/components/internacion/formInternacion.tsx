@@ -43,7 +43,6 @@ export default function FormInternacion({ internacion, pacientes, medicos, habit
             cama: String(internacion.cama?.num_cama || "")
          })
       }
-      console.log("ejecutado")
    }, [internacion, pacientes, medicos, habitaciones, camas, reset])
 
    useEffect(() => {
@@ -69,11 +68,27 @@ export default function FormInternacion({ internacion, pacientes, medicos, habit
    }
 
    const onSubmit = async (data: any) => {
+      const internacionData = {
+         fecha_inicio: new Date(data.fecha_inicio),
+         fecha_fin: data.fecha_fin ? new Date(data.fecha_fin) : null,
+         medico: {
+            matricula: data.matricula,
+         },
+         paciente: {
+            dni: data.dni,
+         },
+         cama: {
+            num_cama: data.cama,
+            habitacion: {
+               num_habitacion: data.habitacion
+            }
+         }
+      }
       try {
          if (internacion) {
-            await internacionesAPI.update(internacion.id_internacion, data)
+            await internacionesAPI.update(internacion.id_internacion, internacionData)
          } else {
-            await internacionesAPI.create(data)
+            await internacionesAPI.create(internacionData)
          }
          closeAndReset();
       } catch (error: any) {
@@ -107,6 +122,7 @@ export default function FormInternacion({ internacion, pacientes, medicos, habit
                      <select
                         {...register("dni", { required: "El paciente es obligatorio" })}
                         className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                        disabled={!!internacion}
                      >
                         <option value="">Seleccione un paciente</option>
                         {pacientes.map((p) => (
@@ -124,6 +140,7 @@ export default function FormInternacion({ internacion, pacientes, medicos, habit
                      <select
                         {...register("matricula", { required: "El médico es obligatorio" })}
                         className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                        disabled={!!internacion}
                      >
                         <option value="">Seleccione un médico</option>
                         {medicos.map((m) => (
@@ -177,6 +194,7 @@ export default function FormInternacion({ internacion, pacientes, medicos, habit
                         type="date"
                         {...register("fecha_inicio", { required: "La fecha es obligatoria" })}
                         className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                        disabled={!!internacion}
                      />
                   </div>
 
