@@ -6,7 +6,7 @@ export const getReportCamasDisponiblesSector = async (req: Request, res: Respons
       const result = await reportService.getReportCamasDisponiblesSector();
       res.json(result);
    } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: "Error", message: err.message });
    }
 }
 
@@ -15,7 +15,7 @@ export const getReportCamasDisponiblesDetalle = async (req: Request, res: Respon
       const result = await reportService.getReportCamasDisponiblesDetalle();
       res.json(result);
    } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: "Error", message: err.message });
    }
 }
 
@@ -24,6 +24,6 @@ export const getAuditoriaGuardia = async (req: Request, res: Response) => {
       const result = await reportService.getAuditoriaGuardia();
       res.json(result);
    } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: "Error", message: err.message });
    }
 }

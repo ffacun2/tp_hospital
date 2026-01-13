@@ -6,8 +6,8 @@ export const getAllSectors = async (req: Request, res: Response) => {
    try {
       const sectors = await sectorService.getAllSectors();
       res.json(sectors);
-   } catch (error) {
-      res.status(500).json({ error: "Error fetching sectors" });
+   } catch (error: any) {
+      res.status(500).json({ error: "Error fetching sectors", message: error.message });
    }
 };
 
@@ -15,8 +15,8 @@ export const getSectorById = async (req: Request, res: Response) => {
    try {
       const sector = await sectorService.getSectorById(req.params.id_sector);
       res.json(sector);
-   } catch (error) {
-      res.status(500).json({ error: "Error fetching sector" });
+   } catch (error: any) {
+      res.status(500).json({ error: "Error fetching sector", message: error.message });
    }
 };
 export const createSector = async (req: Request, res: Response) => {
@@ -25,7 +25,7 @@ export const createSector = async (req: Request, res: Response) => {
       res.status(201).json(newSector);
    } catch (error: any) {
       console.log(error)
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: "Error", message: error.message });
    }
 };
 
@@ -35,7 +35,7 @@ export const updateSector = async (req: Request, res: Response) => {
       res.json(updatedSector);
    } catch (error: any) {
       console.log(error)
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: "Error", message: error.message });
    }
 };
 
@@ -44,6 +44,6 @@ export const deleteSector = async (req: Request, res: Response) => {
       await sectorService.deleteSector(req.params.id_sector);
       res.status(204).send();
    } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: "Error", message: error.message });
    }
 };

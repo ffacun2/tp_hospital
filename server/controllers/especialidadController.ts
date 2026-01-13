@@ -7,7 +7,7 @@ export const getAllEspecialidades = async (req: Request, res: Response) => {
       const especialidades = await especialidadServices.getAllEspecialidades();
       res.json(especialidades);
    } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: "Error", message: err.message });
    }
 }
 
@@ -19,10 +19,10 @@ export const getEspecialidadById = async (req: Request, res: Response) => {
          res.json(especialidad);
       }
       else {
-         res.status(404).json({ error: "Especialidad no encontrada" });
+         res.status(404).json({ error: "Error", message: "Especialidad no encontrada" });
       }
    } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: "Error", message: err.message });
    }
 }
 
@@ -32,7 +32,7 @@ export const createEspecialidad = async (req: Request, res: Response) => {
       const nuevaEspecialidad = await especialidadServices.createEspecialidad(nombre);
       res.status(201).json(nuevaEspecialidad);
    } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: "Error", message: err.message });
    }
 }
 
@@ -45,10 +45,10 @@ export const updateEspecialidad = async (req: Request, res: Response) => {
          res.json(especialidadActualizada);
       }
       else {
-         res.status(404).json({ error: "Especialidad no encontrada" });
+         res.status(404).json({ error: "Error", message: "Especialidad no encontrada" });
       }
    } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: "Error", message: err.message });
    }
 }
 
@@ -58,6 +58,6 @@ export const deleteEspecialidad = async (req: Request, res: Response) => {
       await especialidadServices.deleteEspecialidad(id);
       res.json({ message: "Especialidad eliminada exitosamente" });
    } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: "Error", message: err.message });
    }
 }

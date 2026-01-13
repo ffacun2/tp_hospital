@@ -10,7 +10,7 @@ export const getAllRoomsByHabitacion = async (req: Request, res: Response) => {
       const result = await roomService.getAllRoomsByHabitacion(num_habitacion);
       res.json(result);
    } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: "Error", message: err.message });
    }
 }
 
@@ -28,7 +28,7 @@ export const createBed = async (req: Request, res: Response) => {
       res.json(result);
    } catch (err: any) {
       console.log(err)
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: "Error", message: err.message });
    }
 }
 
@@ -38,6 +38,6 @@ export const deleteBed = async (req: Request, res: Response) => {
       const result = await roomService.deleteBed(num_cama);
       res.json(result);
    } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: "Error", message: err.message });
    }
 }

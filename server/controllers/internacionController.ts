@@ -6,8 +6,8 @@ export const getAllInternacion = async (req: Request, res: Response) => {
    try {
       const internaciones = await internacionService.getAllInternaciones();
       res.json(internaciones);
-   } catch (error) {
-      res.status(500).json({ error: "Error fetching internaciones" });
+   } catch (error: any) {
+      res.status(500).json({ error: "Error", message: "Error fetching internaciones" });
    }
 };
 
@@ -18,10 +18,10 @@ export const getInternacionById = async (req: Request, res: Response) => {
       if (internacion) {
          res.json(internacion);
       } else {
-         res.status(404).json({ error: "Internación no encontrada" });
+         res.status(404).json({ error: "Error", message: "Internación no encontrada" });
       }
-   } catch (error) {
-      res.status(500).json({ error: "Error fetching internacion" });
+   } catch (error: any) {
+      res.status(500).json({ error: "Error", message: "Error fetching internacion" });
    }
 };
 
@@ -30,7 +30,10 @@ export const createInternacion = async (req: Request, res: Response) => {
       const newInternacion = await internacionService.createInternacion(req.body);
       res.status(201).json(newInternacion);
    } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      res.status(400).json({
+         error: "Error de validacion",
+         message: error.message
+      });
    }
 };
 
@@ -41,7 +44,7 @@ export const updateInternacion = async (req: Request, res: Response) => {
       res.json(updateResult);
    }
    catch (error: any) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: "Error", message: error.message });
    }
 };
 
@@ -52,7 +55,7 @@ export const deleteInternacion = async (req: Request, res: Response) => {
       res.json(deleteResult);
    }
    catch (error: any) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: "Error", message: error.message });
    }
 };
 
@@ -62,7 +65,7 @@ export const seguimientoInternacion = async (req: Request, res: Response) => {
       const seguimiento = await internacionService.seguimientoInternacion(Number(id));
       res.json(seguimiento);
    } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: "Error", message: error.message });
    }
 };
 
@@ -74,12 +77,12 @@ export const detalleInternacion = async (req: Request, res: Response) => {
          res.json(detalles)
       }
       else {
-         res.status(404).json({ error: "Internación no encontrada" });
+         res.status(404).json({ error: "Error", message: "Internación no encontrada" });
       }
    }
    catch (error: any) {
       console.log(error)
-      res.status(500).json({ error: error.message })
+      res.status(500).json({ error: "Error", message: error.message })
    }
 }
 
@@ -88,8 +91,8 @@ export const getInternacionesByMedico = async (req: Request, res: Response) => {
    try {
       const internaciones = await internacionService.getInternacionesByMedico(Number(matricula));
       res.json(internaciones);
-   } catch (error) {
-      res.status(500).json({ error: "Error fetching internaciones" });
+   } catch (error: any) {
+      res.status(500).json({ error: "Error", message: "Error fetching internaciones" });
    }
 };
 
@@ -98,8 +101,8 @@ export const getInternacionesByDni = async (req: Request, res: Response) => {
    try {
       const internaciones = await internacionService.getInternacionesByDni(Number(dni));
       res.json(internaciones);
-   } catch (error) {
+   } catch (error: any) {
       console.log(error)
-      res.status(500).json({ error: "Error fetching internaciones" });
+      res.status(500).json({ error: "Error", message: "Error fetching internaciones" });
    }
 };

@@ -575,7 +575,7 @@ BEGIN
 
     IF v_existe IS NOT NULL THEN
         RAISE EXCEPTION
-          'El paciente con ya tiene una internación que se superpone con el rango dado';
+          'El paciente  % ya tiene una internación que se superpone con el rango dado', NEW.dni;
     END IF;
 
     RETURN NEW;

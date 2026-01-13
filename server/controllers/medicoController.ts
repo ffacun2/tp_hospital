@@ -3,12 +3,12 @@ import * as medicoService from "../services/medicoService.ts";
 
 
 
-export const getAllMedicosInfo = async(req: Request, res:Response) => {
+export const getAllMedicosInfo = async (req: Request, res: Response) => {
    try {
       const medicos = await medicoService.getMedicosInfo();
       res.json(medicos);
-   } catch (error) {
-      res.status(500).json({ error: "Error fetching medicos info" });
+   } catch (error: any) {
+      res.status(500).json({ error: "Error fetching medicos info", message: error.message });
    }
 }
 
@@ -16,9 +16,9 @@ export const getAllMedicos = async (req: Request, res: Response) => {
    try {
       const medicos = await medicoService.getAllMedicos();
       res.json(medicos);
-   } catch (error) {
-      res.status(500).json({ error: "Error fetching medicos" });
-   } 
+   } catch (error: any) {
+      res.status(500).json({ error: "Error fetching medicos", message: error.message });
+   }
 };
 
 export const getMedicoByMatricula = async (req: Request, res: Response) => {
@@ -28,10 +28,10 @@ export const getMedicoByMatricula = async (req: Request, res: Response) => {
       if (medico) {
          res.json(medico);
       } else {
-         res.status(404).json({ error: "Médico no encontrado" });
+         res.status(404).json({ error: "Error", message: "Médico no encontrado" });
       }
-   } catch (error) {
-      res.status(500).json({ error: "Error fetching medico" });
+   } catch (error: any) {
+      res.status(500).json({ error: "Error fetching medico", message: error.message });
    }
 };
 
@@ -40,7 +40,7 @@ export const createMedico = async (req: Request, res: Response) => {
       const newMedico = await medicoService.createMedico(req.body);
       res.status(201).json(newMedico);
    } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: "Error", message: error.message });
    }
 };
 
@@ -50,7 +50,7 @@ export const updateMedico = async (req: Request, res: Response) => {
       const updateResult = await medicoService.updateMedico(matricula, req.body);
       res.json(updateResult);
    } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: "Error", message: error.message });
    }
 };
 
@@ -60,6 +60,6 @@ export const deleteMedico = async (req: Request, res: Response) => {
       // await medicoService.deleteMedico(matricula);
       res.status(204).send();
    } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: "Error", message: error.message });
    }
 };

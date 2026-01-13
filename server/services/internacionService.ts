@@ -66,7 +66,7 @@ export const createInternacion = async (
    try {
       //Transaccion de la creacion de la internacion
       await client.query("BEGIN");
-
+      console.log(internacionData);
       const queryInternacion = `
       INSERT INTO internacion 
          (fecha_inicio, fecha_fin, matricula, dni)
@@ -91,8 +91,8 @@ export const createInternacion = async (
          rows[0].id_internacion,
          internacionData.cama.num_cama,
          internacionData.cama.habitacion.num_habitacion,
-         fechaActual.toTimeString().split('T')[0],
-         fechaActual.toTimeString().split('T')[1],
+         fechaActual,
+         fechaActual,
       ];
       await client.query(queryCorresponde, valuesCorresponde);
 
@@ -101,6 +101,7 @@ export const createInternacion = async (
    }
    catch (error: any) {
       await client.query("ROLLBACK");
+      console.log(error);
       throw error;
    }
    finally {

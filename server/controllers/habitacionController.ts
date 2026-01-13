@@ -5,8 +5,8 @@ export const getAllHabitaciones = async (req: Request, res: Response) => {
    try {
       const habitaciones = await habitacionService.getAllHabitaciones();
       res.json(habitaciones);
-   } catch (error) {
-      res.status(500).json({ error: "Error fetching habitaciones" });
+   } catch (error: any) {
+      res.status(500).json({ error: "Error", message: "Error fetching habitaciones" });
    }
 };
 
@@ -17,10 +17,10 @@ export const getHabitacionById = async (req: Request, res: Response) => {
       if (habitacion) {
          res.json(habitacion);
       } else {
-         res.status(404).json({ error: "Habitación no encontrada" });
+         res.status(404).json({ error: "Error", message: "Habitación no encontrada" });
       }
-   } catch (error) {
-      res.status(500).json({ error: "Error fetching habitación" });
+   } catch (error: any) {
+      res.status(500).json({ error: "Error", message: "Error fetching habitación" });
    }
 };
 
@@ -29,7 +29,7 @@ export const createHabitacion = async (req: Request, res: Response) => {
       const newHabitacion = await habitacionService.createHabitacion(req.body);
       res.status(201).json(newHabitacion);
    } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: "Error", message: error.message });
    }
 };
 
@@ -40,7 +40,7 @@ export const updateHabitacion = async (req: Request, res: Response) => {
       res.json(updatedHabitacion);
    }
    catch (error: any) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: "Error", message: error.message });
    }
 };
 
@@ -50,6 +50,6 @@ export const deleteHabitacion = async (req: Request, res: Response) => {
       const deleteResult = await habitacionService.deleteHabitacion(id);
       res.json(deleteResult);
    } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: "Error", message: error.message });
    }
 };

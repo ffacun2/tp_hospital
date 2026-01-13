@@ -8,6 +8,6 @@ export const getAllEnums = async (req: Request, res: Response) => {
       const enums = await enumServices.getAllEnums(typename);
       res.json(enums);
    } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: "Error", message: err.message });
    }
 }
