@@ -14,7 +14,7 @@ import { internacionesAPI } from "../../lib/api"
 
 
 export default function ListInternacion() {
-   const { internaciones, isLoading, isError, deleteInternacion } = useInternaciones()
+   const { internaciones, isLoading, isError, deleteInternacion, refetch } = useInternaciones()
    const { pacientes } = usePacientes()
    const { medicos } = useMedicos()
    const { habitaciones } = useHabitacion()
@@ -41,6 +41,13 @@ export default function ListInternacion() {
    const handleDelete = async (id: number) => {
       if (confirm("¿Está seguro de eliminar esta internación?")) {
          deleteInternacion(id)
+      }
+   }
+
+   const toggleModal = (show: boolean, modified: boolean) => {
+      setShowModal(show)
+      if (modified) {
+         refetch()
       }
    }
 
@@ -95,7 +102,7 @@ export default function ListInternacion() {
                pacientes={pacientes}
                medicos={medicos}
                habitaciones={habitaciones}
-               setShowModal={setShowModal}
+               setShowModal={toggleModal}
             />
          }
 

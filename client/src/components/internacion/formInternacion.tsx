@@ -10,13 +10,13 @@ interface FormInternacionProps {
    pacientes: Paciente[]
    medicos: Medico[]
    habitaciones: Habitacion[]
-   setShowModal: (show: boolean) => void
+   setShowModal: (show: boolean, modified: boolean) => void
 }
 
 export default function FormInternacion({ internacion, pacientes, medicos, habitaciones, setShowModal }: FormInternacionProps) {
    const [camas, setCamas] = useState<Cama[]>([])
 
-   const { register, handleSubmit, reset, control, formState: { errors } } = useForm<any>({
+   const { register, handleSubmit, reset, control, formState: { errors }, getValues } = useForm<any>({
       defaultValues: {
          fecha_inicio: formatToHTMLDate(internacion?.fecha_inicio) || "",
          fecha_fin: internacion?.fecha_fin ? formatToHTMLDate(internacion?.fecha_fin) : "",
@@ -35,15 +35,11 @@ export default function FormInternacion({ internacion, pacientes, medicos, habit
    useEffect(() => {
       if (internacion) {
          reset({
-            fecha_inicio: formatToHTMLDate(internacion.fecha_inicio) || "",
-            fecha_fin: internacion.fecha_fin ? formatToHTMLDate(internacion.fecha_fin) : "",
-            dni: String(internacion.paciente?.dni || ""),
-            matricula: String(internacion.medico?.matricula || ""),
-            habitacion: String(internacion.cama?.habitacion?.num_habitacion || ""),
-            cama: String(internacion.cama?.num_cama || "")
+            ...getValues(),
+            cama: String((habitacionSeleccionada && internacion.cama?.num_cama) || "")
          })
       }
-   }, [internacion, pacientes, medicos, habitaciones, camas, reset])
+   }, [camas, reset])
 
    useEffect(() => {
       if (habitacionSeleccionada) {
@@ -90,14 +86,14 @@ export default function FormInternacion({ internacion, pacientes, medicos, habit
          } else {
             await internacionesAPI.create(internacionData)
          }
-         closeAndReset();
+         closeAndReset(true);
       } catch (error: any) {
          alert("Error al guardar: " + error.message)
       }
    }
 
-   const closeAndReset = () => {
-      setShowModal(false)
+   const closeAndReset = (modified: boolean) => {
+      setShowModal(false, modified)
       reset()
    }
 
@@ -108,7 +104,7 @@ export default function FormInternacion({ internacion, pacientes, medicos, habit
                <h2 className="text-2xl font-bold text-slate-800">
                   {internacion ? "Editar Internación" : "Nueva Internación"}
                </h2>
-               <button onClick={closeAndReset} className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
+               <button onClick={() => closeAndReset(false)} className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
                   <X className="w-5 h-5" />
                </button>
             </div>
@@ -121,7 +117,7 @@ export default function FormInternacion({ internacion, pacientes, medicos, habit
                      <label className="block text-sm font-medium text-slate-700 mb-1">Paciente</label>
                      <select
                         {...register("dni", { required: "El paciente es obligatorio" })}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none disabled:bg-slate-50 disabled:text-slate-400"
                         disabled={!!internacion}
                      >
                         <option value="">Seleccione un paciente</option>
@@ -139,7 +135,7 @@ export default function FormInternacion({ internacion, pacientes, medicos, habit
                      <label className="block text-sm font-medium text-slate-700 mb-1">Médico</label>
                      <select
                         {...register("matricula", { required: "El médico es obligatorio" })}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none disabled:bg-slate-50 disabled:text-slate-400"
                         disabled={!!internacion}
                      >
                         <option value="">Seleccione un médico</option>
@@ -193,7 +189,7 @@ export default function FormInternacion({ internacion, pacientes, medicos, habit
                      <input
                         type="date"
                         {...register("fecha_inicio", { required: "La fecha es obligatoria" })}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 disabled:bg-slate-50 disabled:text-slate-400"
                         disabled={!!internacion}
                      />
                   </div>
@@ -214,7 +210,7 @@ export default function FormInternacion({ internacion, pacientes, medicos, habit
                <div className="flex gap-3 pt-6">
                   <button
                      type="button"
-                     onClick={closeAndReset}
+                     onClick={() => closeAndReset(false)}
                      className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors"
                   >
                      Cancelar

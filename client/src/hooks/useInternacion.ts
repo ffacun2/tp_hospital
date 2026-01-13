@@ -6,7 +6,7 @@ export const useInternaciones = () => {
    const queryClient = useQueryClient();
 
    // 1. Query para obtener la lista completa
-   const { data: internaciones = [], isLoading, isError } = useQuery<Internacion[]>({
+   const { data: internaciones = [], isLoading, isError, refetch } = useQuery<Internacion[]>({
       queryKey: ["internaciones"],
       queryFn: internacionesAPI.getAll,
    });
@@ -50,6 +50,7 @@ export const useInternaciones = () => {
       internaciones,
       isLoading,
       isError,
+      refetch,
       // Acciones de mutación
       createInternacion: createMutation.mutate,
       updateInternacion: updateMutation.mutate,
@@ -57,5 +58,6 @@ export const useInternaciones = () => {
       // Estados de carga de acciones (opcional para deshabilitar botones)
       isSaving: createMutation.isPending || updateMutation.isPending,
       isDeleting: deleteMutation.isPending,
+      refetchInternaciones: queryClient.refetchQueries({ queryKey: ["internaciones"], type: 'active' }),
    };
 };
