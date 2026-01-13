@@ -61,20 +61,51 @@ export const getInternacionById = async (id: number) => {
 export const createInternacion = async (
    internacionData: createInternacionDTO
 ) => {
-   const query = `
-   INSERT INTO internacion 
-   (fecha_inicio, fecha_fin, matricula, dni)
-   VALUES ($1, $2, $3, $4)
-   RETURNING *;
-   `;
-   const values = [
-      internacionData.fecha_inicio,
-      null,
-      internacionData.medico.matricula,
-      internacionData.paciente.dni,
-   ];
-   const { rows } = await pool.query(query, values);
-   return rows[0];
+   const client = await pool.connect();
+   const fechaActual = new Date();
+   try {
+      //Transaccion de la creacion de la internacion
+      await client.query("BEGIN");
+
+      const queryInternacion = `
+      INSERT INTO internacion 
+         (fecha_inicio, fecha_fin, matricula, dni)
+      VALUES ($1, $2, $3, $4)
+      RETURNING *;
+      `;
+      const valuesInternacion = [
+         internacionData.fecha_inicio,
+         null,
+         internacionData.medico.matricula,
+         internacionData.paciente.dni,
+      ];
+      const { rows } = await client.query(queryInternacion, valuesInternacion);
+
+      const queryCorresponde = `
+      INSERT INTO corresponde 
+         (id_internacion, num_cama, num_habitacion, fecha, hora)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING *;
+      `;
+      const valuesCorresponde = [
+         rows[0].id_internacion,
+         internacionData.cama.num_cama,
+         internacionData.cama.habitacion.num_habitacion,
+         fechaActual.toTimeString().split('T')[0],
+         fechaActual.toTimeString().split('T')[1],
+      ];
+      await client.query(queryCorresponde, valuesCorresponde);
+
+      await client.query("COMMIT");
+      return rows[0];
+   }
+   catch (error: any) {
+      await client.query("ROLLBACK");
+      throw error;
+   }
+   finally {
+      client.release();
+   }
 };
 
 export const updateInternacion = async (
@@ -147,7 +178,7 @@ export const detalleInternacion = async (id: number) => {
    -- Objeto de la Cama Actual (o última asignada)
    (SELECT JSON_BUILD_OBJECT(
        'id_cama', c.num_cama,
-       'nro_cama', c.num_cama,
+       'num_cama', c.num_cama,
        'habitacion', JSON_BUILD_OBJECT(
            'num_habitacion', h.num_habitacion,
            'piso', h.piso,
