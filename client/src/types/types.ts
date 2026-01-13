@@ -10,7 +10,7 @@ export interface Guardia {
 
 export interface Cama {
    id_cama: number
-   nro_cama: number
+   num_cama: number
    estado: string
    habitacion: Habitacion
 }

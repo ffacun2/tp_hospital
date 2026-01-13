@@ -9,12 +9,15 @@ import { useInternaciones } from "../../hooks/useInternacion"
 import { useMedicos } from "../../hooks/useMedico"
 import { usePacientes } from "../../hooks/usePaciente"
 import Error from "../ui/error"
+import { useHabitacion } from "../../hooks/useHabitacion"
+import { internacionesAPI } from "../../lib/api"
 
 
 export default function ListInternacion() {
    const { internaciones, isLoading, isError, deleteInternacion } = useInternaciones()
    const { pacientes } = usePacientes()
    const { medicos } = useMedicos()
+   const { habitaciones } = useHabitacion()
 
    const [search, setSearch] = useState("")
    const [showModal, setShowModal] = useState(false)
@@ -24,13 +27,14 @@ export default function ListInternacion() {
       return internaciones.filter((i) =>
          i.paciente?.nombre?.toLowerCase().concat(i.paciente?.apellido?.toLowerCase() || "").includes(search.toLowerCase())
          || i.cama?.habitacion?.num_habitacion.toString().includes(search.toLocaleLowerCase())
-         || i.cama?.nro_cama.toString().includes(search.toLocaleLowerCase())
+         || i.cama?.num_cama.toString().includes(search.toLocaleLowerCase())
          || i.medico?.nombre?.toLowerCase().concat(i.medico?.apellido?.toLowerCase() || "").includes(search.toLowerCase())
       )
    }, [search, internaciones])
 
-   const handleEdit = (internacion: Internacion) => {
-      setEditingInternacion(internacion)
+   const handleEdit = async (internacion: Internacion) => {
+      const internacionDetalles = await internacionesAPI.getDetallesById(Number(internacion.id_internacion))
+      setEditingInternacion(internacionDetalles)
       setShowModal(true)
    }
 
@@ -90,6 +94,7 @@ export default function ListInternacion() {
                internacion={editingInternacion}
                pacientes={pacientes}
                medicos={medicos}
+               habitaciones={habitaciones}
                setShowModal={setShowModal}
             />
          }

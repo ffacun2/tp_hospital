@@ -1,4 +1,4 @@
-import type { Paciente } from "../types/types";
+import type { Internacion, Paciente } from "../types/types";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000"
 
@@ -71,14 +71,14 @@ export const camasAPI = {
 
 // Internaciones
 export const internacionesAPI = {
-   getAll: () => fetchAPI("/internaciones"),
-   getById: (id: number) => fetchAPI(`/internaciones/${id}`),
-   create: (data: any) => fetchAPI("/internaciones", { method: "POST", body: JSON.stringify(data) }),
-   update: (id: number, data: any) => fetchAPI(`/internaciones/${id}`, { method: "PUT", body: JSON.stringify(data) }),
-   delete: (id: number) => fetchAPI(`/internaciones/${id}`, { method: "DELETE" }),
-   getDetallesById: (id: number) => fetchAPI(`/internaciones/${id}/seguimiento`),
-   getIntenacionesByMedico: (id: number) => fetchAPI(`/internaciones/medico/${id}`),
-   getIntenacionesByDni: (dni: number) => fetchAPI(`/internaciones/paciente/${dni}`)
+   getAll: (): Promise<Internacion[]> => fetchAPI("/internaciones"),
+   getById: (id: number): Promise<Internacion> => fetchAPI(`/internaciones/${id}`),
+   create: (data: any): Promise<Internacion> => fetchAPI("/internaciones", { method: "POST", body: JSON.stringify(data) }),
+   update: (id: number, data: any): Promise<Internacion> => fetchAPI(`/internaciones/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+   delete: (id: number): Promise<void> => fetchAPI(`/internaciones/${id}`, { method: "DELETE" }),
+   getDetallesById: (id: number): Promise<Internacion> => fetchAPI(`/internaciones/${id}/seguimiento`),
+   getIntenacionesByMedico: (id: number): Promise<Internacion[]> => fetchAPI(`/internaciones/medico/${id}`),
+   getIntenacionesByDni: (dni: number): Promise<Internacion[]> => fetchAPI(`/internaciones/paciente/${dni}`)
 }
 
 // Guardias
