@@ -30,6 +30,20 @@ export default function ListInternacion() {
          || i.cama?.num_cama.toString().includes(search.toLocaleLowerCase())
          || i.medico?.nombre?.toLowerCase().concat(i.medico?.apellido?.toLowerCase() || "").includes(search.toLowerCase())
       )
+         .sort((a, b) => {
+            // 1. Veo si estan terminadas (tienen fecha_fin)
+            const aTerminada = !!a.fecha_fin;
+            const bTerminada = !!b.fecha_fin;
+            // 2. Ordeno por estado: En curso (false) primero, Terminadas (true) después
+            if (aTerminada !== bTerminada) {
+               return aTerminada ? 1 : -1;
+            }
+            // 3. Si tienen el mismo estado, ordeno alfabéticamente por apellido
+            const nombreA = `${a.paciente?.apellido} ${a.paciente?.nombre}`.toLowerCase();
+            const nombreB = `${b.paciente?.apellido} ${b.paciente?.nombre}`.toLowerCase();
+
+            return nombreA.localeCompare(nombreB);
+         });
    }, [search, internaciones])
 
    const handleEdit = async (internacion: Internacion) => {
