@@ -11,6 +11,6 @@ export interface Internacion {
    cama: Cama
 }
 
-export type createInternacionDTO = Omit<Internacion, "id_internacion" | "fecha_fin" > 
+export type createInternacionDTO = Omit<Internacion, "id_internacion" | "fecha_fin">
 
-export type updateInternacionDTO = Partial<Omit<Internacion, "id_internacion" | "medico" | "paciente" | "cama">>
+export type updateInternacionDTO = Partial<Omit<Internacion, "id_internacion" | "medico" | "paciente">>

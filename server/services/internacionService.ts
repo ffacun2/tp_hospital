@@ -66,7 +66,7 @@ export const createInternacion = async (
    try {
       //Transaccion de la creacion de la internacion
       await client.query("BEGIN");
-      console.log(internacionData);
+
       const queryInternacion = `
       INSERT INTO internacion 
          (fecha_inicio, fecha_fin, matricula, dni)
@@ -113,17 +113,47 @@ export const updateInternacion = async (
    id: number,
    internacionData: updateInternacionDTO
 ) => {
-   const query = `
-   UPDATE internacion
-   SET 
-      fecha_inicio = COALESCE($1, fecha_inicio),
-      fecha_fin = COALESCE($2, fecha_fin)
-   WHERE id_internacion = $3
-   RETURNING *;
-   `;
-   const values = [internacionData.fecha_inicio, internacionData.fecha_fin, id];
-   const { rows } = await pool.query(query, values);
-   return rows[0];
+   const fechaActual = new Date();
+   const client = await pool.connect();
+   try {
+      await client.query("BEGIN");
+      const queryInternacion = `
+         UPDATE internacion
+         SET 
+            fecha_inicio = COALESCE($1, fecha_inicio),
+            fecha_fin = COALESCE($2, fecha_fin)
+         WHERE id_internacion = $3
+         RETURNING *;
+      `;
+      const valuesInternacion = [internacionData.fecha_inicio, internacionData.fecha_fin, id];
+      const { rows } = await client.query(queryInternacion, valuesInternacion);
+
+      const queryCorresponde = `
+      INSERT INTO corresponde 
+         (id_internacion, num_cama, num_habitacion, fecha, hora)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING *;
+      `;
+      const valuesCorresponde = [
+         id,
+         internacionData.cama?.num_cama,
+         internacionData.cama?.habitacion?.num_habitacion,
+         fechaActual,
+         fechaActual,
+      ];
+      await client.query(queryCorresponde, valuesCorresponde);
+
+      await client.query("COMMIT");
+      return rows[0];
+   }
+   catch (error: any) {
+      await client.query("ROLLBACK");
+      console.log(error);
+      throw error;
+   }
+   finally {
+      client.release();
+   }
 };
 
 export const deleteInternacion = async (id: number) => {
