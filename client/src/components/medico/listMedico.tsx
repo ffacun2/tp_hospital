@@ -37,55 +37,57 @@ export default function ListMedic() {
    if (isError) return <Error message="Error al conectar con el servidor." />
 
    return (
-      <>
-         <div className="mb-6">
-            <div className="mb-6 flex items-center justify-between">
-               <div className="relative flex-1 mr-10">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                  <input
-                     type="text"
-                     placeholder="Buscar por nombre, apellido o especialidad..."
-                     value={search}
-                     onChange={(e) => setSearch(e.target.value)}
-                     className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                  />
-               </div>
-               <button
-                  onClick={() => { setShowModal(true); setEditingMedic(undefined) }}
-                  className="flex items-center gap-2 bg-linear-to-r from-teal-500 to-emerald-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all"
-               >
-                  <Plus className="w-5 h-5" />
-                  Nuevo Médico
-               </button>
+      <div className="container mx-auto p-4">
+         <div className="mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
+            {/* Buscador */}
+            <div className="relative flex-1 w-full">
+               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+               <input
+                  type="text"
+                  placeholder="Buscar por nombre, apellido o especialidad..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+               />
             </div>
+            <button
+               onClick={() => { setShowModal(true); setEditingMedic(undefined) }}
+               className="flex items-center gap-2 bg-linear-to-r from-teal-500 to-emerald-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all w-full md:w-auto justify-center"
+            >
+               <Plus className="w-5 h-5" />
+               Nuevo Médico
+            </button>
+
          </div>
 
-         {isLoading ? (
-            <div className="flex justify-center py-20">
-               <LoadingSpinner message="Cargando médicos..." />
-            </div>
-         ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-               {filteredMedicos.length > 0 ? (
-                  filteredMedicos.map((medico) => (
-                     <Link to={`/medicos/${medico.matricula}`}>
-                        <CardMedic
-                           key={medico.matricula}
-                           medico={medico}
-                           handleEdit={handleEdit}
-                           handleDelete={handleDelete}
-                        />
-                     </Link>
-                  ))
-               ) : (
-                  <p className="col-span-full text-center text-slate-500 py-10">
-                     No se encontraron médicos que coincidan con la búsqueda.
-                  </p>
-               )}
-            </div>
-         )}
+         {
+            isLoading ? (
+               <div className="flex justify-center py-20">
+                  <LoadingSpinner message="Cargando médicos..." />
+               </div>
+            ) : (
+               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredMedicos.length > 0 ? (
+                     filteredMedicos.map((medico) => (
+                        <Link to={`/medicos/${medico.matricula}`}>
+                           <CardMedic
+                              key={medico.matricula}
+                              medico={medico}
+                              handleEdit={handleEdit}
+                              handleDelete={handleDelete}
+                           />
+                        </Link>
+                     ))
+                  ) : (
+                     <p className="col-span-full text-center text-slate-500 py-10">
+                        No se encontraron médicos que coincidan con la búsqueda.
+                     </p>
+                  )}
+               </div>
+            )
+         }
 
          {showModal && <CreateFormMedic medico={editingMedic} setShowModal={setShowModal} />}
-      </>
+      </div >
    )
 }

@@ -70,27 +70,26 @@ export default function ListRooms() {
 
 
    return (
-      <>
-         <div className="mb-6">
-            <div className="mb-6 flex items-center justify-between">
-               <div className="relative flex-1 mr-10">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                  <input
-                     type="text"
-                     placeholder="Buscar por número o sector..."
-                     value={search}
-                     onChange={(e) => setSearch(e.target.value)}
-                     className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  />
-               </div>
-               <button
-                  onClick={() => { setShowModal(true); setEditingRoom(undefined) }}
-                  className="flex items-center gap-2 bg-linear-to-r from-orange-500 to-red-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all"
-               >
-                  <Plus className="w-5 h-5" />
-                  Nueva Habitación
-               </button>
+      <div className="container mx-auto p-4">
+         <div className="mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
+            {/* Buscador */}
+            <div className="relative flex-1 w-full">
+               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+               <input
+                  type="text"
+                  placeholder="Buscar por número o sector..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+               />
             </div>
+            <button
+               onClick={() => { setShowModal(true); setEditingRoom(undefined) }}
+               className="flex items-center gap-2 bg-linear-to-r from-orange-500 to-red-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all w-full md:w-auto justify-center"
+            >
+               <Plus className="w-5 h-5" />
+               Nueva Habitación
+            </button>
          </div>
 
          {
@@ -114,6 +113,6 @@ export default function ListRooms() {
          {
             showModal && <CreateFormRoom habitacion={editingRoom} setShowModal={setShowModal} onSuccess={loadData} />
          }
-      </>
+      </div>
    )
 }
