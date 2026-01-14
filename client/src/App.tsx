@@ -32,7 +32,7 @@ function Layout() {
          {
             !isOpen && <button
                onClick={() => setIsOpen(true)}
-               className="sm:hidden fixed top-4 right-4 z-50 p-2 bg-white rounded-lg shadow-md border border-slate-200"
+               className="lg:hidden fixed top-4 right-4 z-50 p-2 bg-white rounded-lg shadow-md border border-slate-200"
             >
                <Menu className="w-6 h-6 text-slate-600" />
             </button>
@@ -50,9 +50,9 @@ function Layout() {
 
          {/* Sidebar */}
          <aside className={`
-            fixed inset-y-0 left-0 z-600 sm:w-64 bg-white border-r border-slate-200 flex-col shadow-sm transition-transform duration-500 transform
+            fixed inset-y-0 left-0 z-600 sm:w-64 h-dvh bg-white border-r border-slate-200 flex-col shadow-sm transition-transform duration-500 transform
             ${isOpen ? "translate-x-0" : "-translate-x-full"}
-            sm:translate-x-0 sm:static sm:inset-auto
+            lg:translate-x-0 lg:static sm:inset-auto
          `}>
             <div className="p-6 border-b border-slate-200 flex justify-between items-center">
                <div className="flex items-center gap-3">
@@ -65,7 +65,7 @@ function Layout() {
                   </div>
                </div>
                {/* Botón cerrar para móvil */}
-               <button onClick={closeSidebar} className="sm:hidden p-1">
+               <button onClick={closeSidebar} className="lg:hidden p-1">
                   <X className="w-6 h-6 text-slate-400" />
                </button>
             </div>
