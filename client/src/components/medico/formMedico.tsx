@@ -92,7 +92,7 @@ export default function CreateFormMedic({ medico, setShowModal }: PropFormMedic)
 
    return (
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-         <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-lg border border-slate-200">
+         <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-h-full overflow-y-auto max-w-lg border border-slate-200">
             <div className="flex justify-between items-center mb-6">
                <h2 className="text-2xl font-bold text-slate-800">
                   {medico ? "Editar Perfil Médico" : "Registro de Médico"}
@@ -171,7 +171,7 @@ export default function CreateFormMedic({ medico, setShowModal }: PropFormMedic)
                {/* SECCIÓN DE CHECKBOXES PARA ESPECIALIDADES */}
                <div>
                   <label className="block text-sm font-bold text-slate-700 mb-3">Especialidades del Médico</label>
-                  <div className="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto p-4 border rounded-2xl bg-slate-50">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:max-h-64 max-h-28 overflow-y-auto p-4 border rounded-2xl bg-slate-50">
                      {especialidades.map((esp: Especialidad) => (
                         <label key={esp.id_especialidad} className="flex items-center group cursor-pointer">
                            <input
@@ -194,7 +194,7 @@ export default function CreateFormMedic({ medico, setShowModal }: PropFormMedic)
                      {watchSelectedIds.map((id: string) => {
                         const nombre = especialidades.find((e: any) => String(e.id_especialidad) === id)?.nombre;
                         return (
-                           <div key={id} className="p-4 border border-slate-200 rounded-2xl bg-white shadow-sm flex items-center justify-between">
+                           <div key={id} className="p-4 border border-slate-200 rounded-2xl bg-white shadow-sm flex flex-col sm:flex-row items-center justify-between">
                               <span className="font-semibold text-slate-700">{nombre}</span>
 
                               <div className="flex items-center gap-6">

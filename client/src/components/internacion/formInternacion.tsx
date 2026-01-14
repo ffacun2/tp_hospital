@@ -113,7 +113,7 @@ export default function FormInternacion({ internacion, pacientes, medicos, habit
                <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 ${internacion ? "grid-rows-4" : "grid-rows-3"}`}>
 
                   {/* Paciente */}
-                  <div className="order-1">
+                  <div className="sm:order-1">
                      <label className="block text-sm font-medium text-slate-700 mb-1">Paciente</label>
                      <select
                         {...register("dni", { required: "El paciente es obligatorio" })}
@@ -131,7 +131,7 @@ export default function FormInternacion({ internacion, pacientes, medicos, habit
                   </div>
 
                   {/* Médico */}
-                  <div className="order-3">
+                  <div className="sm:order-3">
                      <label className="block text-sm font-medium text-slate-700 mb-1">Médico</label>
                      <select
                         {...register("matricula", { required: "El médico es obligatorio" })}
@@ -149,7 +149,7 @@ export default function FormInternacion({ internacion, pacientes, medicos, habit
                   </div>
 
                   {/* Habitación */}
-                  <div className="order-2">
+                  <div className="sm:order-2">
                      <label className="block text-sm font-medium text-slate-700 mb-1">Habitación</label>
                      <select
                         {...register("habitacion", { required: "La habitación es obligatoria" })}
@@ -166,7 +166,7 @@ export default function FormInternacion({ internacion, pacientes, medicos, habit
                   </div>
 
                   {/* Cama */}
-                  <div className="order-4">
+                  <div className="sm:order-4">
                      <label className="block text-sm font-medium text-slate-700 mb-1">Cama</label>
                      <select
                         {...register("cama", { required: "La cama es obligatoria" })}
@@ -184,7 +184,7 @@ export default function FormInternacion({ internacion, pacientes, medicos, habit
                   </div>
 
                   {/* Fecha de Ingreso */}
-                  <div className="order-5">
+                  <div className="sm:order-5">
                      <label className="block text-sm font-medium text-slate-700 mb-1">Fecha de Ingreso</label>
                      <input
                         type="date"
@@ -196,7 +196,7 @@ export default function FormInternacion({ internacion, pacientes, medicos, habit
 
                   {/* Fecha de Alta (Solo si existe internación previa) */}
                   {internacion && (
-                     <div className="order-7 row-start-4">
+                     <div className="sm:order-7 sm:row-start-4">
                         <label className="block text-sm font-medium text-slate-700 mb-1">Fecha de Alta (Opcional)</label>
                         <input
                            type="date"

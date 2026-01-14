@@ -106,7 +106,7 @@ export default function MedicoDetalles() {
                               <span className="text-lg font-medium text-slate-700">
                                  {internacion.paciente.nombre} {internacion.paciente.apellido} {/* Ajustar según tu objeto */}
                               </span>
-                              <div className="flex gap-4 mt-1 text-sm text-slate-500">
+                              <div className="flex flex-wrap gap-4 mt-1 text-sm text-slate-500">
                                  <span>📅 Ingreso: {new Date(internacion.fecha_inicio).toLocaleDateString()}</span>
                                  {
                                     internacion.fecha_fin ? (
